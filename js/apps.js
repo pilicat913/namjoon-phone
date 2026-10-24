@@ -705,6 +705,7 @@
       navBar(nav, null, '设置', null, homeBack()),
       h('div', { class: 'i-scroll' },
         jumpRowGroup(),
+        h('div', { class: 'i-group' }, row(ic('#d13326', '<path d="M5 12a7 7 0 1 0 2-4.9"/><path d="M5 4v4h4"/>'), '重新开始', '', () => restartAsk())),
         h('div', { class: 'i-group' },
           h('div', { class: 'i-row' }, ic('#f39a1e', '<path d="M3 15l7-2 4-9 2 1-2 9 6 3-1 2-6-2-4 6-2-1 2-6-5 1z" fill="#fff" stroke="none"/>'), h('div', { class: 'i-main' }, '飞行模式'), h('span', { class: 'tog' })),
           row(ic('#2a7fe6', '<path d="M4 9.5a11.5 11.5 0 0 1 16 0M7 12.6a7.2 7.2 0 0 1 10 0M10 15.6a3 3 0 0 1 4 0"/>'), '无线局域网', D.wifi || ''),
@@ -734,6 +735,14 @@
       return h('div', { class: 'i-group' }, h('button', { class: 'i-row', type: 'button', onclick: () => jumpPage() },
         ic('#6a4bd0', '<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>'), h('div', { class: 'i-main' }, h('div', { class: 'i-t' }, '跳转时间')),
         h('div', { class: 'i-r' }, dot, done ? '6月13日' : '6月12日', html(CHEV))));
+    }
+    function restartAsk() {
+      const wrap = h('div', { class: 'i-alert-wrap' }, h('div', { class: 'i-alert', role: 'alertdialog' }, h('h3', null, '重新开始？'), h('p', null, '聊天记录、他们记住的名字、跳转的日期都会清空，手机回到刚捡到的样子。'),
+        h('div', { class: 'ia-btns' }, h('button', { type: 'button', onclick: () => wrap.remove() }, '取消'), h('button', { type: 'button', onclick: () => {
+          wrap.remove(); try { window.Music && window.Music.stop ? window.Music.stop() : document.querySelectorAll('audio').forEach((a) => a.pause()); } catch (e) {}
+          U.store.reset(); location.reload();
+        } }, '重新开始'))));
+      window.Phone.screen.append(wrap);
     }
     function jumpPage() {
       if (!U.store.get('jumpSeen', false)) { U.store.set('jumpSeen', true); window.Phone.refresh(); const d = root.querySelector('.st-dot'); if (d) d.remove(); }

@@ -62,11 +62,13 @@
 
   /* ---------- 存储（会话内保留进度） ---------- */
   const KEY = S.storeKey || 'phone-v1';
-  let saved = {};
+  let saved = {}, resetting = false;
   try { saved = JSON.parse(sessionStorage.getItem(KEY) || '{}') || {}; } catch (e) { saved = {}; }
   const store = {
     get: (k, d) => (k in saved ? saved[k] : d),
-    set: (k, v) => { saved[k] = v; try { sessionStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} },
+    set: (k, v) => { if (resetting) return; saved[k] = v; try { sessionStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} },
+    // 重新开始：清掉本轮所有进度（聊天、身份、跳转、已读等），之后的写入全部忽略，直到页面重新载入
+    reset: () => { resetting = true; saved = {}; try { sessionStorage.removeItem(KEY); } catch (e) {} },
   };
 
   /* ---------- 图标（商标位置全部是可替换槽位） ---------- */
