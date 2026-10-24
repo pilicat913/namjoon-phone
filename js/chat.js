@@ -568,6 +568,13 @@
       ticket: '<path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z"/><path d="M9 7v10" stroke-dasharray="2 2"/>',
       chicken: '<path d="M14 4a5 5 0 0 1 4 8l-6 6-2-2-3 3-2-2 3-3-2-2 6-6a5 5 0 0 1 2-2z"/>',
       cake: '<path d="M4 20h16v-8H4zM4 15c2 1.5 4 1.5 5.3 0s4-1.5 5.4 0 4 1.5 5.3 0M12 12V8M12 5.5v.5"/>',
+      can: '<path d="M8 4h8v16H8z"/><path d="M8 7h8M13 9l-2.5 4h3L11 17"/>',
+      bowl: '<path d="M3 11h18a9 7 0 0 1-18 0z"/><path d="M8 8l3-5M13 8l4-4"/>',
+      sock: '<path d="M8 3h7v9l3.5 3.5a2.5 2.5 0 0 1-3.5 3.5L8 12z"/><path d="M8 6h7"/>',
+      ice: '<path d="M5 12h14l-2 8H7z"/><path d="M6 12a6 6 0 0 1 12 0"/><path d="M10 9h.01M14 9.5h.01"/>',
+      book: '<path d="M4 5c3-1 6-1 8 1 2-2 5-2 8-1v14c-3-1-6-1-8 1-2-2-5-2-8-1z"/><path d="M12 6v14"/>',
+      pizza: '<path d="M12 21L3.5 6a14 14 0 0 1 17 0z"/><path d="M5.5 9.5a11 11 0 0 1 13 0"/><path d="M10 12h.01M13.5 15h.01"/>',
+      meat: '<path d="M5 9c2-5 12-6 14 0 1.5 5-4 10-9 9-4-1-6.5-4.5-5-9z"/><path d="M8 11c3 1 6 1 9-1M9 15c2 .8 4 .6 6-.5"/>',
     };
     const giftIcon = (it, size) => h('span', { class: 'kg-ico', style: `--c:${it.color};width:${size}px;height:${size}px`, html: `<svg viewBox="0 0 24 24">${GIFT_ICON[it.icon] || I.gift}</svg>` });
     function openGift(room) {
@@ -576,13 +583,14 @@
       const go = h('button', { class: 'kt-go', type: 'button', disabled: true }, '送出礼物');
       const list = h('div', { class: 'kg-list' }, (RX().giftItems || []).map((it) => {
         const row = h('button', { class: 'kg-row', type: 'button', onclick: () => { U.sound.tap(); pick = it; list.querySelectorAll('.kg-row').forEach((r) => r.classList.toggle('on', r === row)); go.disabled = false; go.textContent = `送出 ${it.name}`; } },
-          giftIcon(it, 46), h('span', { class: 'kg-main' }, h('b', null, it.name), h('small', null, it.shop + ' · 礼物券')), h('span', { class: 'kg-price' }, won(it.price)));
+          giftIcon(it, 40), h('span', { class: 'kg-main' }, h('b', null, it.name), h('small', null, it.shop + ' · 礼物券')), h('span', { class: 'kg-price' }, won(it.price)));
         return row;
       }));
       go.addEventListener('click', () => { if (!pick) return; U.sound.tap(); close(); sendPay(room.id, to, { pay: 'gift', item: pick.id }); });
       sheet.append(h('div', { class: 'ks-body' },
         h('div', { class: 'kt-to' }, U.avatar(to, 54), h('div', null, h('small', null, '送给'), h('b', null, U.personName(to)))),
-        list, h('p', { class: 'kt-tip' }, '虚拟礼物券，只在这部手机里发生。'), go));
+        list, h('p', { class: 'kt-tip' }, '虚拟礼物券，只在这部手机里发生。')),
+        h('div', { class: 'kg-foot' }, go));
     }
 
     current = { deliver, isVisible: ctx.isVisible, refreshRoom };

@@ -152,10 +152,8 @@
     function respond(id,raw,context={}) {
       const p=person(id),t=normalize(raw);
       if(p.schema!==2){p.schema=2;p.pendingIdentity=false;p.pendingName=false;p.identityQuestion='';}
-      if(data.minors[id]) {
-        if(p.fixedUsed)return result(id,p,[],'fixed');
-        p.fixedUsed=true;return result(id,p,data.minors[id],'fixed');
-      }
+      // 妈妈 / 经纪人 / 方PD：文字消息不回，一直挂着“1”；只有打电话没接时回一句
+      if(data.minors[id])return result(id,p,[],'fixed');
       const member=data.members[id];if(!member)return result(id,p,[]);
       p.readerMessages=Math.max((p.readerMessages||0)+(context.messageCount||1),context.totalMessages||0);
       // 不像南俊会说的话：叫宝宝/欧巴、用“您”、问对方几岁、是谁
@@ -313,8 +311,8 @@
     function callReply(id,kind) {
       const p=person(id);p.lastCall=kind;p.calls={...p.calls,[kind]:(p.calls?.[kind]||0)+1};
       if(data.minors[id]) {
-        if(p.fixedUsed)return result(id,p,[],'call');
-        p.fixedUsed=true;return result(id,p,data.minors[id],'call');
+        if(p.callUsed)return result(id,p,[],'call');
+        p.callUsed=true;return result(id,p,data.minors[id],'call');
       }
       const row=data.members[id]?.calls?.[kind]?.[p.calls[kind]-1];
       return result(id,p,row?.[p.identity==='known'?'after':'before']||[],'call');
@@ -327,6 +325,19 @@
       return respond(id,explicit.at(-1)||guess||meaningful.at(-1)||inputs.at(-1)||'',{...context,messageCount:inputs.length});
     }
     /* 虚拟转账与礼物券：只有六位成员会回；返回台词、结果（收下 / 退回）以及偶尔的回礼 */
+    /* 转账留言的意思：买东西 / 吃饭 / 谢谢 / 道歉 / 生日 / 加油 / 零花钱 */
+    function noteIntent(note){
+      const t=normalize(note);
+      const buy=t.match(/(?:买|喝)(?:个|点|些|一?(?:瓶|杯|个|份|碗|根|包|盒|袋))?(.{1,6})/);
+      if(buy){const item=buy[1].replace(/(?:吧|啊|呀|哦|的|了|喝|吃|去|呢|嘛|~|！|!|。|，|,|\s)+$/,'');if(item&&!/^(?:什么|啥|东西)$/.test(item))return {kind:'buy',item,reason:'买'+item};return {kind:'buy',item:'东西',reason:'买东西'};}
+      if(/吃|饭|夜宵|宵夜|零食|饿/.test(t))return {kind:'eat',reason:'吃饭'};
+      if(/生日|生快|happybirthday/i.test(t))return {kind:'birthday',reason:'过生日'};
+      if(/对不起|抱歉|不好意思|sorry|别生气|消消气/i.test(t))return {kind:'sorry',reason:'道歉'};
+      if(/谢|辛苦|多亏|麻烦你/.test(t))return {kind:'thanks',reason:'谢我'};
+      if(/加油|fighting|화이팅|파이팅|打气|冲/i.test(t))return {kind:'cheer',reason:'加油'};
+      if(/零花钱|零用钱|红包|给你的|请你|拿去花|随便花|花吧/.test(t))return {kind:'pocket',reason:'零花钱'};
+      return null;
+    }
     const tierOf=(amount)=>amount<5000?'tiny':amount<50000?'small':amount<200000?'big':'huge';
     function payReply(id,kind,itemId,opts={}) {
       const p=person(id),rx=RX(),px=root.STORY?.payExtras||{},mode=p.identity==='known'?'after':'before';
@@ -337,11 +348,22 @@
         if(!rounds||!rounds.length){save(id,p);return {messages:['？'],outcome:'returned'};}
         const k='pay:transfer:'+mode+(tier==='small'?'':':'+tier),n=p.used[k]||0;p.used={...p.used,[k]:n+1};
         const round=rounds[n%rounds.length];
-        let lines=[...round.lines];
+        let lines=[...round.lines],outcome=round.outcome;
         const note=String(opts.note||'').trim();
-        if(note){const tpl=rotate(id,p,'note',(px.noteLines?.[id]||[]).map(x=>[x]));if(tpl)lines.splice(1,0,tpl[0].replaceAll('{note}',note));}
+        const intent=note?noteIntent(note):null;
+        const fill=(x)=>x.replaceAll('{note}',note).replaceAll('{item}',intent?.item||'东西').replaceAll('{reason}',intent?.reason||'').replaceAll('{哥}',mode==='before'&&/^(?:jw|ty|jy)$/.test(id)?'哥':'');
+        const set=intent&&px.noteIntents?.[intent.kind]?.[id];
+        if(set&&(tier==='tiny'||tier==='small')){
+          // 看懂了留言：直接按留言的意思回，不再问“这钱是干嘛的”
+          const nk='pay:note:'+intent.kind,m=p.used[nk]||0,last=p.used['pay:note:item'];p.used={...p.used,[nk]:m+1,'pay:note:item':intent.item||''};
+          // 买东西：同一样东西再转才说“又是…”
+          const idx=intent.kind==='buy'?(m>0&&last===intent.item?1:0):m;
+          const r=set[idx%set.length];lines=r.lines.map(fill);outcome=r.outcome;
+        } else if(intent&&px.noteBig?.[id]){
+          lines.splice(1,0,fill(px.noteBig[id]));
+        } else if(note){const tpl=rotate(id,p,'note',(px.noteLines?.[id]||[]).map(x=>[x]));if(tpl)lines.splice(1,0,fill(tpl[0]));}
         save(id,p);
-        return {messages:lines,outcome:round.outcome};
+        return {messages:lines,outcome};
       }
       const g=px.gifts?.[id]||{};
       const cKey='pay:gift:'+itemId,count=p.used[cKey]||0,total=p.used['pay:gift:total']||0;

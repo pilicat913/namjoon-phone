@@ -156,10 +156,17 @@ window.STORY.readerExtras = {
   /* ---------- 礼物券 ---------- */
   giftItems: [
     { id: 'banana', name: '香蕉牛奶', price: 1300, shop: '便利店', color: '#f5c518', ink: '#5a3d00', icon: 'milk' },
+    { id: 'energy', name: '能量饮料', price: 2000, shop: '便利店', color: '#3d8fd6', icon: 'can' },
+    { id: 'tteok', name: '辣炒年糕', price: 3500, shop: '小吃店', color: '#d9483b', icon: 'bowl' },
     { id: 'coffee', name: '冰美式', price: 4100, shop: '咖啡店', color: '#7a5235', icon: 'cup' },
     { id: 'store', name: '便利店 5千元券', price: 5000, shop: '便利店', color: '#4aa36b', icon: 'ticket' },
+    { id: 'socks', name: '运动袜 三双装', price: 6000, shop: '运动用品店', color: '#8a7bd1', icon: 'sock' },
+    { id: 'bingsu', name: '红豆刨冰', price: 7000, shop: '甜品店', color: '#5bb7c9', icon: 'ice' },
+    { id: 'book', name: '书店 1万元券', price: 10000, shop: '书店', color: '#5d7a99', icon: 'book' },
     { id: 'chicken', name: '炸鸡套餐', price: 18000, shop: '炸鸡店', color: '#e98b2f', icon: 'chicken' },
-    { id: 'cake', name: '冰淇淋蛋糕', price: 23000, shop: '甜品店', color: '#e5739b', icon: 'cake' }
+    { id: 'pizza', name: '披萨', price: 21900, shop: '披萨店', color: '#d9792b', icon: 'pizza' },
+    { id: 'cake', name: '冰淇淋蛋糕', price: 23000, shop: '甜品店', color: '#e5739b', icon: 'cake' },
+    { id: 'meat', name: '烤五花肉 2人份', price: 26000, shop: '烤肉店', color: '#b5523b', icon: 'meat' }
   ],
   gift: {
     yq: {

@@ -38,6 +38,30 @@ for(const id of ['mom','mgr','pd']){
   assert.equal(e.respond(id,'在吗').messages.length,0);
   assert.equal(e.callReply(id,'voice').messages.length,0);
 }
+// 三个非成员：文字消息一律不回（先发文字也不影响之后打电话那一句）
+db={};e=create();
+for(const id of ['mom','mgr','pd']){
+  assert.equal(e.respond(id,'hi').messages.length,0);
+  assert.ok(e.callReply(id,'voice').messages.length);
+  assert.equal(e.respond(id,'在吗').messages.length,0);
+}
+// 转账留言：看懂意思就不再问“要买什么”
+db={};e=create();
+for(const id of Object.keys(window.STORY.interactions.members)){
+  const r=e.payReply(id,'transfer',null,{amount:1000,note:'买个水'}).messages.join('/');
+  assert.ok(r.includes('水')&&!/买什么|什么意思|干嘛|这是什么/.test(r),id+': '+r);
+  const r2=e.payReply(id,'transfer',null,{amount:1000,note:'买杯咖啡'}).messages.join('/');
+  assert.ok(r2.includes('咖啡')&&!r2.includes('又是'),id+': '+r2);
+  for(const n of ['吃点好吃的','谢谢你','对不起','生日快乐','加油','零花钱']){
+    const m=e.payReply(id,'transfer',null,{amount:3000,note:n}).messages;
+    assert.ok(m.length&&!m.some(x=>/\{|买什么/.test(x)),id+' '+n+': '+m);
+  }
+  const big=e.payReply(id,'transfer',null,{amount:300000,note:'买个水'}).messages.join('/');
+  assert.ok(big.includes('买水'),id+': '+big);
+}
+for(const it of window.STORY.readerExtras.giftItems)for(const id of Object.keys(window.STORY.interactions.members))
+  assert.ok(window.STORY.payExtras.gifts[id].items[it.id]?.length,id+' 缺礼物 '+it.id);
+console.log('转账留言 / 新礼物 / 非成员不回文字 检查通过');
 db={};e=create();e.respond('ty','我是粉丝');
 assert.notEqual(e.respond('ty','我叫你别打了').topic,'name');
 assert.equal(e.respond('ty','我叫小猫').name,'小猫');

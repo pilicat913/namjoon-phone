@@ -87,11 +87,83 @@ window.STORY.payExtras = {
     jy: ['……「{note}」', '「{note}」ㅋㅋ']
   },
 
+  /* 看懂了留言的意思（小额转账）：按意思回，不再问“干嘛的”。{item} 是要买的东西，{哥} 只在没发现身份时出现 */
+  noteIntents: {
+    buy: {
+      yq: [{ lines: ['……{item}？', '行 收了', '剩下的还你'], outcome: 'accepted' }, { lines: ['又让我买{item}', '……知道了'], outcome: 'accepted' }],
+      sx: [{ lines: ['ㅋㅋ{item}', '行 这就去买', '顺便给你也带一个'], outcome: 'accepted' }, { lines: ['又是{item}ㅋㅋ', '好好 去买'], outcome: 'accepted' }],
+      hx: [{ lines: ['{item}！！', '好 我现在就去便利店ㅋㅋ', '谢谢！'], outcome: 'accepted' }, { lines: ['又是{item}ㅋㅋㅋㅋ', '好的好的！！'], outcome: 'accepted' }],
+      jw: [{ lines: ['啊 原来是买{item}ㅋㅋ', '好 那我收下了', '谢谢{哥}'], outcome: 'accepted' }, { lines: ['又是{item}ㅋㅋ', '好 我记住了'], outcome: 'accepted' }],
+      ty: [{ lines: ['{item}！', '我要去买最贵的那种ㅋㅋ', '……开玩笑的 谢谢{哥}'], outcome: 'accepted' }, { lines: ['又是{item}？', '我开始怀疑你是{item}的代言人了ㅋㅋ'], outcome: 'accepted' }],
+      jy: [{ lines: ['{item}…', '好 我去买', '谢谢{哥}ㅋㅋ'], outcome: 'accepted' }, { lines: ['ㅋㅋ又是{item}', '……好'], outcome: 'accepted' }]
+    },
+    eat: {
+      yq: [{ lines: ['让我吃饭？', '……知道了 收了'], outcome: 'accepted' }],
+      sx: [{ lines: ['给我饭钱ㅋㅋ', '好 今天吃顿好的'], outcome: 'accepted' }],
+      hx: [{ lines: ['吃饭钱！！', '那我去吃拉面ㅋㅋ', '谢谢！'], outcome: 'accepted' }],
+      jw: [{ lines: ['{哥}怕我饿着吗ㅋㅋ', '谢谢', '我会好好吃饭的'], outcome: 'accepted' }],
+      ty: [{ lines: ['吃饭钱！', '我要去吃炸酱面ㅋㅋ'], outcome: 'accepted' }],
+      jy: [{ lines: ['ㅋㅋ饭钱', '……我现在就饿了', '谢谢{哥}'], outcome: 'accepted' }]
+    },
+    thanks: {
+      yq: [{ lines: ['谢什么', '……收了 别有下次'], outcome: 'accepted' }],
+      sx: [{ lines: ['谢什么ㅋㅋ', '应该的', '那我就收下了'], outcome: 'accepted' }],
+      hx: [{ lines: ['哎呀 谢什么呀！！', '不过我收下了ㅋㅋ'], outcome: 'accepted' }],
+      jw: [{ lines: ['没有啦…', '我也没做什么', '谢谢{哥}'], outcome: 'accepted' }],
+      ty: [{ lines: ['ㅋㅋ突然这么客气', '那我收下了'], outcome: 'accepted' }],
+      jy: [{ lines: ['……没什么的', '但谢谢{哥}'], outcome: 'accepted' }]
+    },
+    sorry: {
+      yq: [{ lines: ['……没生气', '钱退了', '不用这样'], outcome: 'returned' }],
+      sx: [{ lines: ['道歉还转钱ㅋㅋ', '我没往心里去', '退给你了'], outcome: 'returned' }],
+      hx: [{ lines: ['哎呀 我没生气！！', '钱退回去啦'], outcome: 'returned' }],
+      jw: [{ lines: ['不用道歉的', '我真的没事', '退回去了哦'], outcome: 'returned' }],
+      ty: [{ lines: ['ㅋㅋ那我原谅你了', '钱我收了'], outcome: 'accepted' }],
+      jy: [{ lines: ['……没事', '退了'], outcome: 'returned' }]
+    },
+    birthday: {
+      yq: [{ lines: ['我生日早过了', '……收了 当补的'], outcome: 'accepted' }],
+      sx: [{ lines: ['我生日是12月ㅋㅋ', '不过先收着'], outcome: 'accepted' }],
+      hx: [{ lines: ['我生日早过了ㅋㅋ', '不过谢谢！！'], outcome: 'accepted' }],
+      jw: [{ lines: ['我生日是10月呀ㅋㅋ', '记错了吧', '退回去啦'], outcome: 'returned' }],
+      ty: [{ lines: ['我生日是12月！', '……不过可以提前过ㅋㅋ'], outcome: 'accepted' }],
+      jy: [{ lines: ['我生日是9月…', '先收着ㅋㅋ'], outcome: 'accepted' }]
+    },
+    cheer: {
+      yq: [{ lines: ['……嗯', '你也是'], outcome: 'accepted' }],
+      sx: [{ lines: ['ㅋㅋ加油加油', '收下了 去买点吃的'], outcome: 'accepted' }],
+      hx: [{ lines: ['加油！！！', '我们一起加油ㅋㅋ'], outcome: 'accepted' }],
+      jw: [{ lines: ['嗯！', '我会加油的', '你也是'], outcome: 'accepted' }],
+      ty: [{ lines: ['加油！', '我收下了 当能量费ㅋㅋ'], outcome: 'accepted' }],
+      jy: [{ lines: ['……嗯', '我会加油的'], outcome: 'accepted' }]
+    },
+    pocket: {
+      yq: [{ lines: ['零花钱？', '……我又不是小孩', '退了'], outcome: 'returned' }],
+      sx: [{ lines: ['给我零花钱ㅋㅋ', '你真是', '好 收了'], outcome: 'accepted' }],
+      hx: [{ lines: ['零花钱！！ㅋㅋ', '谢谢！'], outcome: 'accepted' }],
+      jw: [{ lines: ['零花钱…', '你自己留着吧', '退回去了'], outcome: 'returned' }],
+      ty: [{ lines: ['零花钱！', '我要存起来ㅋㅋ'], outcome: 'accepted' }],
+      jy: [{ lines: ['ㅋㅋ零花钱', '谢谢{哥}'], outcome: 'accepted' }]
+    }
+  },
+  /* 看懂了留言但金额太大：插在第一句后面 */
+  noteBig: {
+    yq: '{reason}也用不着这么多', sx: '{reason}要这么多？ㅋㅋ', hx: '{reason}也太多了吧！！',
+    jw: '{reason}的话 不用这么多的', ty: '{reason}要这么多钱吗？', jy: '{reason}…也太多了'
+  },
+
   /* 礼物：每人每样东西自己的反应（同一样送第二次用第二组，再多就用 again） */
   gifts: {
     yq: {
       opener: ['你给我送这个干嘛'],
       items: {
+        energy: [['能量饮料', '……知道我今晚要熬夜啊', '谢了']],
+        tteok: [['辣炒年糕', '……这个可以']],
+        socks: [['袜子？', '……行 正好缺']],
+        bingsu: [['刨冰？', '……天热 收了']],
+        book: [['书店券？', '……我去买本乐理书', '谢了']],
+        pizza: [['披萨', '……分给他们 我吃一块就行']],
+        meat: [['五花肉？', '……这个不错', '下次一起去']],
         banana: [['香蕉牛奶', '……行'], ['又是甜的ㅋ', '放冰箱了']],
         coffee: [['……美式', '这个可以', '谢了'], ['刚好困', '谢了']],
         store: [['便利店券', '……买水用了']],
@@ -104,6 +176,13 @@ window.STORY.payExtras = {
     sx: {
       opener: ['南俊给我送礼物？', '今天太阳从西边出来了ㅋㅋ'],
       items: {
+        energy: [['能量饮料ㅋㅋ', '我不熬夜的', '我要睡美容觉']],
+        tteok: [['辣炒年糕！', '要配鱼饼才完整ㅋㅋ']],
+        socks: [['袜子ㅋㅋ', '宿舍里的袜子总是少一只', '谢谢啊']],
+        bingsu: [['刨冰ㅋㅋ', '夏天就要吃这个', '分你一勺']],
+        book: [['书店券ㅋㅋ', '我买本菜谱']],
+        pizza: [['披萨！', '饼边都留给我ㅋㅋ']],
+        meat: [['五花肉！！', '烤肉交给我', '我烤得最好ㅋㅋ']],
         banana: [['香蕉牛奶ㅋㅋ', '好久没喝了', '谢谢啊']],
         coffee: [['咖啡啊', '哥晚上喝了会睡不着的ㅋㅋ', '明天早上喝']],
         store: [['便利店券！', '我要去买泡面和三角饭团ㅋㅋ']],
@@ -116,6 +195,13 @@ window.STORY.payExtras = {
     hx: {
       opener: ['南俊你怎么了ㅋㅋ'],
       items: {
+        energy: [['能量饮料！！', '明天练习靠它了ㅋㅋ']],
+        tteok: [['辣炒年糕！！', '我要辣的那种ㅋㅋ']],
+        socks: [['袜子！！', '练舞最费袜子了ㅋㅋ', '谢谢！！']],
+        bingsu: [['刨冰！！', '我要多加年糕ㅋㅋ']],
+        book: [['书店券！', '我买本漫画可以吗ㅋㅋ']],
+        pizza: [['披萨！！！', '我去叫大家ㅋㅋ']],
+        meat: [['五花肉！！！', '今天是什么好日子ㅋㅋ', '谢谢！！']],
         banana: [['香蕉牛奶！！', '我小时候最爱喝这个ㅋㅋ']],
         coffee: [['咖啡！！', '明天早上靠它了ㅋㅋ', '谢谢！！']],
         store: [['哇 便利店券', '我去买冰淇淋！！']],
@@ -128,6 +214,13 @@ window.STORY.payExtras = {
     jw: {
       opener: ['哥？'],
       items: {
+        energy: [['能量饮料…', '是让我多练一会儿的意思吗ㅋㅋ']],
+        tteok: [['辣炒年糕ㅋㅋ', '我最近好像吃得有点多…', '但还是谢谢！']],
+        socks: [['袜子ㅋㅋ', '好实用', '谢谢呀']],
+        bingsu: [['刨冰！', '好想现在就吃ㅋㅋ', '谢谢呀']],
+        book: [['书店券…', '我好久没看书了', '谢谢呀']],
+        pizza: [['披萨ㅋㅋ', '宿舍要开派对了']],
+        meat: [['五花肉！', '好久没吃肉了ㅠ', '谢谢呀']],
         banana: [['香蕉牛奶ㅋㅋ', '谢谢呀', '我一口气喝完了']],
         coffee: [['冰美式…', '我其实有点怕苦ㅋㅋ', '但谢谢你！']],
         store: [['便利店券ㅋㅋ', '我拿去给大家买饮料']],
@@ -140,6 +233,13 @@ window.STORY.payExtras = {
     ty: {
       opener: ['哥送我礼物！'],
       items: {
+        energy: [['能量饮料', '喝了我会一直跳舞的ㅋㅋ']],
+        tteok: [['辣炒年糕', '我要蘸着炸物吃ㅋㅋ']],
+        socks: [['袜子！', '我要左右穿不一样的ㅋㅋ']],
+        bingsu: [['刨冰', '我把红豆挑出来给柾国ㅋㅋ']],
+        book: [['书店券', '我要买画册ㅋㅋ']],
+        pizza: [['披萨！', '我要最中间那块ㅋㅋ']],
+        meat: [['肉！', '我要包生菜吃一大口ㅋㅋ']],
         banana: [['香蕉牛奶', '我要插两根吸管ㅋㅋ']],
         coffee: [['咖啡', '我喝了会一直说话的', '……谢谢ㅋㅋ']],
         store: [['便利店券！', '我要买那个会发光的棒棒糖']],
@@ -152,6 +252,13 @@ window.STORY.payExtras = {
     jy: {
       opener: ['哥…'],
       items: {
+        energy: [['能量饮料', '……我喝了会睡不着', '明天早上喝']],
+        tteok: [['辣炒年糕！', '……我现在就想去吃']],
+        socks: [['袜子', '……我的袜子确实都破了ㅋㅋ']],
+        bingsu: [['刨冰…', '泰亨哥会来抢的', '我先藏起来ㅋㅋ']],
+        book: [['书店券', '……可以买漫画吗']],
+        pizza: [['披萨…', '我一个人能吃半个ㅋㅋ']],
+        meat: [['肉……', '谢谢', '真的谢谢ㅋㅋ']],
         banana: [['香蕉牛奶！！', '我最喜欢这个ㅋㅋ'], ['又是香蕉牛奶ㅋㅋ', '……还是喜欢']],
         coffee: [['咖啡…', '我还是更喜欢香蕉牛奶ㅋㅋ', '谢谢']],
         store: [['便利店券', '我去买三角饭团ㅋㅋ']],
