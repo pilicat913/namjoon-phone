@@ -210,3 +210,8 @@ node tests/viewport.cjs
 
 - 后端 `feedback/worker.js` 新增 `/export?key=密码`：下载 CSV，默认只含“上次下载以后、没接住的话”（按句子去重计数），下载后自动记录截到哪里（表 `export_state`，按 rowid）。参数：`&again=1` 重下上一批，`&all=1` 全部消息，`&since=UTC时间` / `&from=rowid` 指定起点。需要 Worker Secret `EXPORT_KEY`。作者已部署并下载成功。
 - 新文件 `data/player-extras-8.js`：nameArmy（玩家给粉丝起名叫 army 时成员记住）、knowArmy、futureWarn（解散 / 肩膀受伤等未来剧透：担心但不点破）、songLiked、stageName，放宽若干；群聊新增 gross、sleepTogetherG。
+
+## 2026-10-25 第十八轮：语库第九批（玩家数据截至 2026-10-24 17:00:42 UTC）
+
+- 引擎：被识破、正在问名字时，“我是小喵（是army喔）”也算报名字（取“是 / ，”前面那段）；“叫哥就行 / 叫我怒那”把这个称呼当名字；夸人认“萌”；加油认 화이팅 / 파이팅 / fighting。
+- 新文件 `data/player-extras-9.js`：diet、wishReq、tiredMe、worryWhat、hair、futureSong（玩家说出未来的歌名：成员觉得是好名字、记下来）、yeontan（碳尼）、firstWin（拿一位）、cantGo、fromAbroad（我在台湾）、intro，放宽若干；群聊新增 futureSongG、dietG、youngG。

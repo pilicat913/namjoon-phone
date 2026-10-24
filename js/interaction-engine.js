@@ -141,8 +141,8 @@
       if(/(?:我|我们)(?:好|很|有点|特别|太)?(?:紧张|害怕|担心)/.test(t))return 'selfNervous';
       if(/(?:照片|自拍|相片|头像|这张|那张|拍得|拍的|拍照|帽子|小狗|猫咪)/.test(t))return 'photo';
       if(/(?:我|我们)(?:真的|很|好|特别|非常|超)?(?:喜欢|爱)(?:你们|你)(?:啊|呀|哦|呢|的声音|的歌)?$|^爱你(?:们)?$/.test(t))return 'affection';
-      if(/帅|可爱|好看|漂亮|声音好听|唱得好|唱歌好听|跳得好|你(?:真|好|很|太|超)?(?:棒|厉害|温柔|有趣|好玩|聪明)/.test(t))return 'compliment';
-      if(/加油|会成功|相信你|支持你|最棒|一定可以|好好做|好好练|好好表现|祝你/.test(t))return 'cheer';
+      if(/帅|可爱|萌|好看|漂亮|声音好听|唱得好|唱歌好听|跳得好|你(?:真|好|很|太|超)?(?:棒|厉害|温柔|有趣|好玩|聪明)/.test(t))return 'compliment';
+      if(/加油|화이팅|파이팅|fighting|会成功|相信你|支持你|最棒|一定可以|好好做|好好练|好好表现|祝你/.test(t))return 'cheer';
       if(/你(?:们)?(?:会|很|也|有点)?紧张|紧张(?:吗|不)|出道|舞台|准备好|明天(?:要)?(?:上台|表演)|怕不怕/.test(t))return 'nervous';
       if(/睡(?:觉)?了[吗嘛没]|睡了没有|没睡|还醒|困不困|你(?:现在|也|很|不)?困|失眠|睡不着/.test(t))return 'sleep';
       if(/吃了[吗嘛没]|吃了没有|吃饱了[吗没]|吃饱没|吃晚餐|吃晚饭|吃早饭|早饭吃|吃啥|吃饭|吃什么|饿不饿|你(?:也|不|很)?饿|吃没/.test(t))return 'food';
@@ -257,8 +257,11 @@
           return result(id,p,[...first.slice(0,2),...fillName(rotate(id,p,'greet',RX().greet?.[id])||['好 {name}'],name)],'name');
         }
       }
-      if(p.identity==='known' && (p.pendingName || /^(?:我叫|叫我|你叫我|你可以叫我)/.test(String(raw).trim())) && (nameMatch || plainName)) {
-        const name=(nameMatch?nameMatch[1]:String(raw).trim()).replace(/(?:就行|就好|吧|呀|啊)$/,'');
+      // “叫哥就行 / 叫我怒那”：拿这个称呼当名字
+      const callMe=String(raw).trim().match(/^(?:你)?叫(?:我)?(哥|哥哥|姐|姐姐|怒那|欧尼|努娜)(?:就行|就好|就可以|吧)?[。！!～~]?$/);
+      if(p.identity==='known'&&p.pendingName&&callMe){p.name=callMe[1];p.pendingName=false;return result(id,p,fillName(rotate(id,p,'greet',RX().greet?.[id])||['好 {name}','我记住了'],callMe[1]),'name');}
+      if(p.identity==='known' && (p.pendingName || /^(?:我叫|叫我|你叫我|你可以叫我)/.test(String(raw).trim()) || (!p.name&&iAmName)) && (nameMatch || plainName)) {
+        const name=(nameMatch?nameMatch[1]:String(raw).trim()).replace(/(?:就行|就好|吧|呀|啊)$/,'').split(/是|，|,/)[0];
         if(!/叫你|在吗|干嘛|你好|你猜|猜|哈哈|ㅋㅋ|不知道|不告诉|不接|不是|南俊|什么|^啥$|^好$|^嗯$|^[阿啊呀哦嗯]$|加油|晚安|喜欢|爱你/.test(name)) {
           p.name=name;p.pendingName=false;
           return result(id,p,fillName(rotate(id,p,'greet',RX().greet?.[id])||['好 {name}','我记住了'],name),'name');
