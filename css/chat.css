@@ -181,6 +181,8 @@ body.fullscreen.keyboard-open .kr-input { padding-bottom: 6px; }
 .kt-tip { margin: 0; text-align: center; font-size: 12.5px; color: #4c566c; text-shadow: 0 1px 0 rgba(255,255,255,.7); }
 .kt-go { height: 46px; border-radius: 8px; font-size: 17px; font-weight: 700; color: #3c2318; border: 1px solid #b89a00; background: linear-gradient(#fff38a, #ffe233 50%, #ffda0a 51%, #f5cf00); box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 1px 2px rgba(0,0,0,.2); }
 .kt-go:disabled { opacity: .45; }
+.ks-body { min-height: 0; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.ks-body > * { flex-shrink: 0; }
 .kg-foot { flex: none; padding: 8px 10px calc(10px + var(--sab)); background: rgba(197,204,212,.96); border-top: 1px solid #aab2bb; }
 .kg-foot .kt-go { width: 100%; }
 .kg-list { background: #fff; border-radius: 9px; border: 1px solid #a8aeb5; overflow: hidden; }
