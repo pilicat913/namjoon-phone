@@ -189,7 +189,7 @@
   function groupReply(roomId,inputs){
     const G=S.group,room=roomById(roomId);if(!G||!room)return [];
     const st=U.store.get('groupState',{used:{},scene:0,debut:0,lastLead:''});
-    const text=window.ZH?window.ZH.toSimp(inputs.join(' ')):inputs.join(' '),low=text.toLowerCase(),members=room.members.filter(id=>G.lead[id]);
+    const text=(window.ZH?window.ZH.toSimp(inputs.join(' ')):inputs.join(' ')).replace(/[❤♥💕💗💖💓💘💞🫶]\uFE0F?/gu,'爱'),low=text.toLowerCase(),members=room.members.filter(id=>G.lead[id]);
     const aliases=(S.nameReplies&&S.nameReplies.aliases)||{};
     const named=(str)=>members.find(id=>(aliases[id]||[SHORT[id]]).some(a=>a.length>=2&&str.toLowerCase().startsWith(a.toLowerCase())));
     let lead=null;const at=text.match(/@\s*([^\s@]+)/);
@@ -204,8 +204,22 @@
     const rounds=G.lead[lead][key],n=st.used[lead+':'+key]||0;st.used[lead+':'+key]=n+1;
     const seq=rounds[n%rounds.length].map(line=>[lead,line]);
     st.lastLead=lead;
+    // 不只一个人理：再有一两个人接着回读者这句（同话题用自己的台词，没有就用通用反应），之后才可能岔开闲聊
+    if(!onlyAt||Math.random()<.5){
+      const others=members.filter(id=>id!==lead);
+      const pref=(topic?topic.prefer:[]).filter(id=>others.includes(id));
+      const rest=others.filter(id=>!pref.includes(id)).sort(()=>Math.random()-.5);
+      const count=onlyAt?1:(Math.random()<.55?2:1);
+      [...pref,...rest].slice(0,count).forEach((f,i)=>{
+        const fk=topic&&!onlyAt&&G.lead[f][topic.key]?topic.key:null;
+        const pool=fk?G.lead[f][fk]:(G.follow&&G.follow[f]);
+        if(!pool||!pool.length)return;
+        const uk=f+':'+(fk||'follow'),m=st.used[uk]||0;st.used[uk]=m+1;
+        pool[m%pool.length].forEach((line,j)=>seq.push([f,line,j?0:(i?500:700)]));
+      });
+    }
     const debut=!!U.store.get('jumped',false),list=debut?G.debutScenes:G.scenes,k=debut?'debut':'scene';
-    if(list&&list.length&&Math.random()<.7){
+    if(list&&list.length&&Math.random()<.35){
       const scene=list[(st[k]||0)%list.length];st[k]=(st[k]||0)+1;
       scene.forEach(([from,line],i)=>seq.push([from,line,i?0:1500]));
     }

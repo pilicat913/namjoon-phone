@@ -174,3 +174,9 @@ node tests/viewport.cjs
 - 新文件 `data/player-extras-3.js`：私聊新增 futureCheer（“你以后一定会成为世界巨星”这类不再回“你说的是以后？”）、timeTravel、insistSelf、robot、maknae、careBody、secret、coming、pocketMoney、outfit、never、chores、pdSaid、danceGod、debutYay、nonsense、ready、goodIntent、slump、iNervous、drink、socks、sendMe、careful、tellYou、leader；放宽 eatOut / give / comfort / insult / songwriting / excited / crush / callAsk / offerFood / love。群聊新增 forbid、notMe、worryG、careful、chores、exercise、wakeG、bored、concert、today、alcohol、lost、scold、maknaeG，放宽若干旧话题。
 - 引擎：任何 moreTopics 命中时跳过“你说的是以后？”；“我❤️你”的爱心当成“爱”；“你有看到他吗”算问南俊在哪（承认不是本人）；“吃饱了吗”“在做些什么”“你还在吗”“你现在觉得我是谁”能认；短句 ack 补 是的是的 / 喔喔好 / 当然；ㄎㄎ 算笑。
 - 群聊：只发一个成员名字（“泰亨”“柾国柾国”）时按被 @ 处理（called）。
+
+## 2026-10-24 第十二轮：群聊多人回复；语库第四批（玩家数据截至 14:42:15 UTC）
+
+- 群聊（`chat.js` 的 `groupReply`）：第一个人回完后，再有 1～2 个人接着回读者这句（话题优先人选先上；同话题用他们自己的台词，没有就用 `group.follow` 的通用反应），之后才以 35% 的概率岔开闲聊（原来 70%）。只 @ 一个人时，一半概率再有一个人插一句。群里的 ❤️ 也当成“爱”。
+- 新文件 `data/player-extras-4.js`：私聊新增 distress（说“想死”时成员会担心、劝对方找身边的人说，不再回“ㅋㅋ”）、sad、cryComfort、didWell、noisy、cook、remind、promise、brain、askAbout、guessMe、eatUp、checkBag、treatMe、back、listen、homesick、sleepTogether、ateAlready、okQ、chickenLove、rude；放宽若干旧话题。群聊新增 distressG、hug、roach、broke、photoReq、cute、ready、inspire，放宽 together / lost / chores / sleepNag / wakeG / love。
+- 引擎：😭🥺 等哭脸当“呜”；单发“阿米”算粉丝承认；“不是南俊 / 我不是rm / 你认识金南俊吗”算承认；“什么 / 怎么说 / 你说啥”等归到 why；短句 ack 再补一批。
