@@ -199,3 +199,9 @@ node tests/viewport.cjs
 4. 妈妈：跳到 6 月 13 日以后（弹完消息时 / 之后再给妈妈发消息时），只要读者给妈妈发过文字，妈妈回一次（`momDebut`，说过“想你”会多一句“妈妈也想你”，说过睡不着 / 紧张会换成“睡不着就躺着…妈妈在呢”）。之后照旧不回。存储键 `momReplied`。
 5. 出道前说“出道快乐”：私聊回“明天才是呢”这类，跳转后改成真的庆祝（moreTopics 可带 `debutLines`）；群聊话题 `notYet` 只在跳转前生效（话题可带 `beforeDebut` / `afterDebut`）。读者一共发了 25 条还没跳转时，设置推一次横幅“跳转时间：想看看 6 月 13 日出道那晚吗？”（`jumpHinted`）。
 - 引擎的 respond 现在会收到 `context.debut`（chat.js 传入是否已跳转）。
+
+## 2026-10-25 第十六轮：群聊不再“已读乱回”；语库第七批
+
+- 玩家反馈群聊“已读乱回”。原因是没接住的话也有第二、三个人用通用附和（“南俊说得对ㅋㅋ”）接，再岔开闲聊。现在：没有话题（key 为 any）时只有一个人回，不跟附和、不岔开；`group.follow` 也改成不带“同意”语气。
+- 新文件 `data/player-extras-7.js`：私聊新增 money、wantToTalk、whereQ、tellWhenDone、aboutNamjoon、cookReq（找硕珍做饭）、animal、expressLove、noona、bday、gameConsole、stress，放宽大量旧话题；群聊新增 meta（玩家说“乱回”时道歉）、bts、quit、goOut、english、wow、harshG、tsundere、familyG、interview、whenBackG、fanG。引擎 food 认“吃晚餐 / 早饭 / 吃啥”。
+- 数据导出：以后用“只看没接住的话”的 SQL（按兜底回复筛、按句子去重计数），见 `feedback/查看新消息.sql`。

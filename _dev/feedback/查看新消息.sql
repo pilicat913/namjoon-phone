@@ -9,3 +9,17 @@ SELECT f.created_at, f.character, f.message, f.reply FROM feedback f JOIN export
 
 -- 万一多运行了一次 / 忘了复制：单独运行这句，看最近 200 条
 -- SELECT created_at, character, message, reply FROM feedback ORDER BY rowid DESC LIMIT 200;
+
+-- 【推荐】只看“没接住”的话（按句子去重、按次数排序）。把时间换成上一次的截止时间
+SELECT character, message, COUNT(*) AS n
+FROM feedback
+WHERE created_at > '2026-10-24 16:30:00'
+  AND character NOT IN ('妈妈', '经纪人哥', '方PD')
+  AND (reply LIKE '%没明白%' OR reply LIKE '%没看懂%' OR reply LIKE '%没跟上%'
+    OR reply LIKE '%理解错%' OR reply LIKE '%再说一遍%' OR reply LIKE '%换个说法%'
+    OR reply LIKE '%什么意思%' OR reply LIKE '%没懂%' OR reply LIKE '%说重点%'
+    OR reply LIKE '%在说什么%' OR reply LIKE '%说什么呀%' OR reply LIKE '%你说啥%'
+    OR reply LIKE '？%' OR reply LIKE '……什么%' OR reply LIKE '啥？%'
+    OR reply LIKE '哥？%' OR reply LIKE '啊？%' OR reply LIKE '嗯？%')
+GROUP BY character, message
+ORDER BY n DESC;

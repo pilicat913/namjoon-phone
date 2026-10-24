@@ -189,7 +189,7 @@
   function groupReply(roomId,inputs){
     const G=S.group,room=roomById(roomId);if(!G||!room)return [];
     const st=U.store.get('groupState',{used:{},scene:0,debut:0,lastLead:''});
-    const text=(window.ZH?window.ZH.toSimp(inputs.join(' ')):inputs.join(' ')).replace(/[❤♥💕💗💖💓💘💞🫶]\uFE0F?/gu,'爱').replace(/[😭😢🥲🥺]/gu,'哭'),low=text.toLowerCase(),members=room.members.filter(id=>G.lead[id]);
+    const text=(window.ZH?window.ZH.toSimp(inputs.join(' ')):inputs.join(' ')).replace(/[❤♥💕💗💖💓💘💞🫶]\uFE0F?/gu,'爱').replace(/[😭😢🥲🥺🥹]/gu,'哭'),low=text.toLowerCase(),members=room.members.filter(id=>G.lead[id]);
     const aliases=(S.nameReplies&&S.nameReplies.aliases)||{};
     const named=(str)=>members.find(id=>(aliases[id]||[SHORT[id]]).some(a=>a.length>=2&&str.toLowerCase().startsWith(a.toLowerCase())));
     let lead=null;const at=text.match(/@\s*([^\s@]+)/);
@@ -207,7 +207,8 @@
     const seq=rounds[n%rounds.length].map(line=>[lead,line]);
     st.lastLead=lead;
     // 不只一个人理：再有一两个人接着回读者这句（同话题用自己的台词，没有就用通用反应），之后才可能岔开闲聊
-    if(!onlyAt||Math.random()<.5){
+    // 没接住（没有话题）时只让一个人回，不再有人跟着附和、也不岔开闲聊，免得像“已读乱回”
+    if(key!=='any'&&(!onlyAt||Math.random()<.5)){
       const others=members.filter(id=>id!==lead);
       const pref=(topic?topic.prefer:[]).filter(id=>others.includes(id));
       const rest=others.filter(id=>!pref.includes(id)).sort(()=>Math.random()-.5);
@@ -223,7 +224,7 @@
     const debut=!!U.store.get('jumped',false),list=debut?G.debutScenes:G.scenes,k=debut?'debut':'scene';
     // 闲聊小场景：每局随机顺序，用过的不再出现，用完就不再岔开
     const order=st[k+'Order']||(st[k+'Order']=(list||[]).map((_,i)=>i).sort(()=>Math.random()-.5));
-    if(list&&order.length&&Math.random()<.35){
+    if(key!=='any'&&list&&order.length&&Math.random()<.35){
       const scene=list[order.shift()];
       scene.forEach(([from,line],i)=>seq.push([from,line,i?0:1500]));
     }
