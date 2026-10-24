@@ -1,7 +1,7 @@
 /* 本地关键词与上下文匹配。所有台词均为同人预写内容，不调用模型接口。 */
 (function (root) {
   'use strict';
-  const normalize = value => String(value || '').normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]+/gu, '');
+  const normalize = value => (root.ZH ? root.ZH.toSimp(String(value || '')) : String(value || '')).normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]+/gu, '');
   function calledMember(raw){
     const text=normalize(raw).replace(/^(?:喂|诶|欸|哎|嘿)/,'');
     const tail=/^(?:哥|哥哥|欧巴|oppa|오빠|형|hyung)?(?:啊|呀|呐|呢|在吗|在嘛|在不在|人呢|出来)?$/;
@@ -10,7 +10,7 @@
     }
     return null;
   }
-  const shortReply = /^(?:嗯+|恩+|哦+|噢+|好+(?:的|呀|啊|哦|嘞|吧)?|行(?:吧|啊)?|知道(?:了|啦)|收到(?:了|啦)?|哈哈+|呵呵+|嘿嘿+|ㅋㅋ+|ㅎㅎ+|ok+|okay|yes|嗯嗯|在呢|在的|在啊|在|在这|我在|这样啊|原来如此|原来是这样|懂了|明白了?|了解)$/;
+  const shortReply = /^(?:嗯+|恩+|哦+|噢+|好+(?:的|呀|啊|哦|嘞|吧)?|行(?:吧|啊)?|知道(?:了|啦)|收到(?:了|啦)?|哈哈+|呵呵+|嘿嘿+|ㅋㅋ+|ㅎㅎ+|ok+|okay|yes|嗯嗯|在呢|在的|在啊|在|在这|我在|这样啊|原来如此|原来是这样|懂了|明白了?|了解|(?:可以)+(?:啊|呀|的)?|(?:好吧)+|嗯呢|好嘞|(?:行)+|我看看|看见了|看到了)$/;
   // 接话用的肯定 / 否定开头
   const YES = /^(?:嗯|恩|对|是|在|要|会|有|当然|没错|yes|弄完|完了|好了|回来了|到了|快了|马上|真的|确定)/;
   const NO = /^(?:不|没|还没|别|no|才不)/;
@@ -47,10 +47,10 @@
       // 起疑分两步：先说一句“你今天怎么怪怪的”，再过两句才直接问
       if(data.members[id]&&p.identity==='unknown'&&topic!=='call'&&topic!=='identity'){
         const n=(p.readerMessages||0)-(p.base||0),score=n+(p.odd||0)*2,at=SUSPECT_AT[id]||6;
-        if(p.hinted&&score>=at&&n>=(p.hintAt||0)+2&&topic!=='followup'){
+        if(p.hinted&&score>=at&&n>=(p.hintAt||0)+2&&!['followup','calledSelf','calledOther'].includes(topic)){
           p.identity='suspect';p.pendingIdentity=true;p.identityQuestion='notNamjoon';
           lines=['等等',`你不是南俊${['jw','ty','jy'].includes(id)?'哥':''}吧？`];topic='identity';
-        } else if(!p.hinted&&score>=at-2&&n>=1&&!['unmatched','ack','followup','no','yes'].includes(topic)){
+        } else if(!p.hinted&&score>=at-2&&n>=1&&!['unmatched','ack','followup','no','yes','calledSelf','calledOther'].includes(topic)){
           p.hinted=true;p.hintAt=n;
           lines=[...lines,...(rotate(id,p,'hint',root.STORY?.payExtras?.hints?.[id])||['你今天怎么怪怪的'])];
         }
@@ -88,8 +88,15 @@
       }
       return lines;
     }
+    const moreRe={};
+    function moreTopic(t){
+      const M=root.STORY?.moreTopics||{};
+      for(const [k,v] of Object.entries(M)){const re=moreRe[k]||(moreRe[k]=new RegExp(v.re));if(re.test(t))return k;}
+      return '';
+    }
     function getTopic(raw,p,context={}) {
       const t=normalize(raw);
+      const mt=moreTopic(t);if(mt)return mt;
       if(/^(?:宝宝|宝贝|宝|亲爱的|老婆|老公|亲亲|欧巴|欧っぱ|오빠|oppa)(?:啊|呀|呢)?$/.test(t))return 'petName';
       if(/猜猜我是谁|你猜我是谁|猜我是谁|知道我是谁吗|认出我了吗/.test(t))return 'guess';
       if(/想你|想死你|好想见你/.test(t))return 'miss';
@@ -150,6 +157,7 @@
       return null;
     }
     function respond(id,raw,context={}) {
+      if(root.ZH)raw=root.ZH.toSimp(String(raw||'')); // 繁体输入先统一成简体
       const p=person(id),t=normalize(raw);
       if(p.schema!==2){p.schema=2;p.pendingIdentity=false;p.pendingName=false;p.identityQuestion='';}
       // 妈妈 / 经纪人 / 方PD：文字消息不回，一直挂着“1”；只有打电话没接时回一句
@@ -162,7 +170,7 @@
       const claimSelf=/^(?:我(?:就是|是|真是|真的是)(?:金)?南(?:俊|菌)(?:啊|呀|哥|本人)?|真的是我|就是我|是本人)$/.test(t);
       const deniedFan=/(?:不是|不算|并非)(?:你们的|你的|个)?(?:粉丝|army|阿米)/.test(t);
       const fan=!deniedFan && /(?:我是|我也是|其实我是|作为)(?:你们的|你的|个|一名|南俊的|防弹的|bts的)?(?:粉丝|army|阿米)|^你们的粉丝$/.test(t);
-      const notSelf=/(?:我(?:其实|真的|确实|并)?不是(?:金)?南(?:俊|菌)|我不是(?:他|本人)|我不是南俊哥)|^(?:被发现了|被认出来了|露馅了|你发现了|你认出来了|不是他|不是本人)$/.test(t);
+      const notSelf=/(?:我(?:其实|真的|确实|并)?不是(?:金)?南(?:俊|菌)|我不是(?:他|本人)|我不是南俊哥)|^(?:被(?:你)?发现了|被(?:你)?认出来了|露馅了|你发现了|你认出来了|不是他|不是本人)(?:啊|呀|ㅋ+|哈+)?$/.test(t);
       const foundPhone=/(?:捡到|捡了|拿到)(?:了)?(?:这部|这个|他的|南俊的|一部)?手机|手机不是我的/.test(t) && !/(?:没|没有|不是我)(?:捡到|拿到)/.test(t);
       const asksNamjoon=/南(?:俊|菌)(?:哥)?(?:在哪|呢|去哪|回来了吗|什么时候回来|现在在哪)/.test(t);
       // 成员已经起疑（说过“你今天怎么怪怪的”）时，单说一句“我不是”也算承认
@@ -211,6 +219,9 @@
         const key=`${kind}:${mode}`,n=p.nameCallRounds?.[key]||0;
         p.nameCallRounds={...p.nameCallRounds,[key]:n+1};
         const names={me:'南俊',yq:'玧其',sx:'硕珍',hx:'号锡',jw:'智旻',ty:'泰亨',jy:'柾国'};
+        // 连着叫同一个人：第三次起换成“干嘛一直叫我”这类
+        p.callStreak=kind==='own'&&p.lastTopic==='calledSelf'?(p.callStreak||1)+1:1;
+        if(kind==='own'&&p.callStreak>=3){const spam=rotate(id,p,'nameSpam',root.STORY?.nameSpam?.[id]);if(spam)return result(id,p,spam,'calledSelf');}
         const messages=pool[n%pool.length].map(line=>line.replaceAll('{name}',names[called]));
         return result(id,p,messages,kind==='own'?'calledSelf':'calledOther');
       }
@@ -220,7 +231,8 @@
       }
       const nameMatch=!/^我叫你/.test(String(raw).trim()) && String(raw).trim().match(/^(?:我叫|你可以叫我|叫我|我是)([\p{L}\p{N}_\-]{1,12})(?:就行|吧|呀|啊)?[。！!～~]?$/u);
       const plainName=/^[\p{L}\p{N}_\-]{2,6}$/u.test(String(raw).trim()) && !getTopic(raw,p,context) && !/^(?:我|你|他|她|怎么|什么|为啥|以后|未来)|电话|视频|明天|出道/.test(t);
-      if(p.identity!=='known' && nameMatch && /^(?:我叫|叫我|你可以叫我)/.test(String(raw).trim())) {
+      const iAmName=nameMatch&&/^我是/.test(String(raw).trim())&&!/南俊|南菌|粉丝|阿米|army|认真|开玩笑|故意|说|谁|你|他|她|真|来|想|要|在|不|觉得|怕|担心|学生|人|的$|了$|啊$|吗$|呢$|吧$|哥|弟|妹|姐|朋友|同学|练习生|成员|队长|老幺/i.test(nameMatch[1])&&nameMatch[1].length<=6;
+      if(p.identity!=='known' && nameMatch && (/^(?:我叫|叫我|你可以叫我)/.test(String(raw).trim())||iAmName)) {
         const name=nameMatch[1].replace(/(?:就行|吧|呀|啊)$/,'');
         if(!/南俊|南菌|什么|^啥$/.test(name)){
           p.identity='known';p.pendingIdentity=false;p.name=name;p.pendingName=false;
@@ -253,6 +265,14 @@
       if(topic==='petName'&&p.identity!=='known'){
         const repeated=!!p.petNameUsed;p.petNameUsed=true;
         return result(id,p,repeated?['ㅋㅋ还叫']:extra(id,'petName'),'petName');
+      }
+      const more=root.STORY?.moreTopics?.[topic];
+      if(more&&more.lines?.[id]){
+        const mode=p.identity==='known'?'after':'before';
+        if(more.odd&&p.identity==='unknown')p.odd=(p.odd||0)+1;
+        const lines=(rotate(id,p,'more:'+topic+':'+mode,more.lines[id][mode]||more.lines[id].before)||[]).map(x=>x.replaceAll('{哥}',mode==='before'&&/^(?:jw|ty|jy)$/.test(id)?'哥':''));
+        p.unmatchedCount=0;p.lastInput=t;
+        return result(id,p,lines,topic);
       }
       if(topic==='no'||topic==='yes')return result(id,p,extra(id,topic),topic);
       if(topic==='affection')return result(id,p,extra(id,'affection'),topic);

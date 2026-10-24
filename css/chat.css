@@ -305,3 +305,6 @@ button.klink { display: block; text-align: left; padding: 0; font: inherit; colo
 
 .kpay.gift.claim { cursor: pointer; }
 .kpay.gift.claim .kp-foot { color: #c8740b; font-weight: 700; }
+/* 繁體显示：伪元素里的字 */
+:root[lang^="zh-Hant"] .kri-send::after { content: "傳送"; }
+:root[lang^="zh-Hant"] .ki-call-end::after { content: "結束通話"; }

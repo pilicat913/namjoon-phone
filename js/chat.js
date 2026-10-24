@@ -189,7 +189,7 @@
   function groupReply(roomId,inputs){
     const G=S.group,room=roomById(roomId);if(!G||!room)return [];
     const st=U.store.get('groupState',{used:{},scene:0,debut:0,lastLead:''});
-    const text=inputs.join(' '),low=text.toLowerCase(),members=room.members.filter(id=>G.lead[id]);
+    const text=window.ZH?window.ZH.toSimp(inputs.join(' ')):inputs.join(' '),low=text.toLowerCase(),members=room.members.filter(id=>G.lead[id]);
     const aliases=(S.nameReplies&&S.nameReplies.aliases)||{};
     const named=(str)=>members.find(id=>(aliases[id]||[SHORT[id]]).some(a=>a.length>=2&&str.toLowerCase().startsWith(a.toLowerCase())));
     let lead=null;const at=text.match(/@\s*([^\s@]+)/);
@@ -197,7 +197,8 @@
     if(!lead)lead=members.find(id=>(aliases[id]||[]).some(a=>a.length>=2&&!/^[a-z]+$/i.test(a)&&text.includes(a)))||null;
     const topic=G.topics.find(tp=>new RegExp(tp.re,'i').test(low));
     if(!lead){const pool=(topic?topic.prefer:members).filter(id=>id!==st.lastLead&&members.includes(id));lead=pool[Math.floor(Math.random()*pool.length)]||members[0];}
-    const key=topic&&G.lead[lead][topic.key]?topic.key:'any';
+    const onlyAt=at&&!text.replace(/@\s*[^\s@]+/g,'').trim();
+    const key=onlyAt&&G.lead[lead].called?'called':topic&&G.lead[lead][topic.key]?topic.key:'any';
     const rounds=G.lead[lead][key],n=st.used[lead+':'+key]||0;st.used[lead+':'+key]=n+1;
     const seq=rounds[n%rounds.length].map(line=>[lead,line]);
     st.lastLead=lead;

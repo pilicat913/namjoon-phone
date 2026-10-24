@@ -7,6 +7,9 @@ vm.runInNewContext(readFileSync('dist/data/name-replies.js','utf8'),{window});
 vm.runInNewContext(readFileSync('dist/data/reader-extras.js','utf8'),{window});
 vm.runInNewContext(readFileSync('dist/data/pay-extras.js','utf8'),{window});
 vm.runInNewContext(readFileSync('dist/data/followups.js','utf8'),{window});
+vm.runInNewContext(readFileSync('dist/data/group.js','utf8'),{window});
+vm.runInNewContext(readFileSync('dist/data/player-extras.js','utf8'),{window});
+{const c={};c.globalThis=c;vm.createContext(c);vm.runInContext(readFileSync('dist/vendor/opencc/t2cn.js','utf8'),c);const cv=c.OpenCC.Converter({from:'twp',to:'cn'});window.ZH={toSimp:s=>cv(String(s))};}
 vm.runInNewContext(readFileSync('dist/js/interaction-engine.js','utf8'),{window});
 let db={};const storage={get:(k,d)=>JSON.parse(JSON.stringify(db[k]??d)),set:(k,v)=>db[k]=JSON.parse(JSON.stringify(v))};
 const create=()=>window.PhoneInteractionEngine.create(window.STORY.interactions,storage);
@@ -220,3 +223,23 @@ for(const id of Object.keys(window.STORY.interactions.members)){
  }
 }
 console.log('“你不是南俊吧？”各种回答（承认 / 自称本人）检查通过');
+// 第九轮：繁体输入、玩家数据补的话题、连叫名字
+{
+  db={};let e=create();
+  e.respond('jw','在吗');
+  assert.equal(e.respond('jw','被你發現了').identity,'known');
+  db={};e=create();
+  assert.equal(e.respond('ty','我是小貓').name,'小猫');
+  assert.equal(e.respond('ty','我愛你').topic,'love');
+  for(const [id,msg,topic] of [['yq','在寫歌嗎','songwriting'],['jy','你一會下樓嗎','downstairs'],['jw','弟弟','didi'],['hx','敷衍我','complain'],['hx','沒事趕快去睡覺','goSleep'],['sx','你是金碩珍嗎','askIsMember'],['hx','好明天早上要記得叫我啊哈哈哈','wakeMe'],['jy','不是在練舞嗎','practice'],['sx','是我們照顧哥吧ㅋㅋㅋ','takeCare'],['hx','我也不敢相信','dream'],['jw','不會拖大家後腿的','worry'],['yq','打電話吧','callAsk']]){
+    const r=e.respond(id,msg);assert.ok(r.topic===topic||r.topic==='identity',id+' '+msg+' → '+r.topic);assert.ok(r.messages.length&&!r.messages.some(x=>x.includes('{')),msg);
+  }
+  db={};e=create();const seen=new Set();
+  for(let i=0;i<6;i++){const r=e.respond('jw','朴智旻');assert.equal(r.topic,'calledSelf');seen.add(r.messages.join('/'));}
+  assert.ok(seen.size>=4,'连叫名字要换着回');
+  assert.equal(e.getState('jw').identity,'unknown');
+  // 不会把“我是认真的 / 我是粉丝”当名字
+  db={};e=create();assert.notEqual(e.respond('sx','我是认真的').topic,'name');
+  console.log('繁体输入 / 玩家数据补的话题 / 连叫名字 检查通过');
+}
+

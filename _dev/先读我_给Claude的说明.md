@@ -150,3 +150,15 @@ node tests/viewport.cjs
 - 锁屏密码第一位要按两次：`js/app.js` 数字键改为 `pointerdown` 立刻记录，随后的普通 `click` 忽略；`detail === 0` 的键盘 / 辅助功能点击仍然有效。已在模拟 iPhone 上验证点一次即记一位。
 - 自愿分享语库（默认关闭）：`js/feedback.js`，在 `chat.js` 前加载。聊天输入框上方有“语库分享：关/开”和“本条不分享”。同意状态单独存在 sessionStorage 的 `namjoon-feedback-consent-v1`（“重新开始”不会清掉它）。只上传开启后新发的文字 + 角色名 + 游戏生成的回复；不补传历史。
 - 后端：Cloudflare Worker `https://namjoon-feedback.1228088256.workers.dev/`，D1 数据库 `namjoon-feedback`（绑定名 `DB`），源码与建表 SQL 在 `feedback/`（仓库里是 `_dev/feedback/`）。允许来源 `https://pilicat913.github.io`。没有公开读取接口，在 D1 Console 用 `SELECT * FROM feedback ORDER BY created_at DESC LIMIT 100;` 查看。
+
+## 2026-10-24 第九轮：简体 / 繁體，按玩家数据补语库
+
+- 简繁：`vendor/opencc/`（opencc-js 1.0.5，MIT）+ `js/zh.js`。
+  - 输入：`t2cn.js`（约 70KB）所有人都载入，`ZH.toSimp()` 在 `normalize()`、`respond()` 和群聊里把繁体先转简体，规则只写简体。
+  - 显示：繁体模式才懒加载 `cn2t.js`（约 1MB），只做字形转换（`cn → tw`），再加一小张界面用语表（设定、視訊通話、簡訊、轉帳……）；不用台湾词汇整句改写，所以“打开这部旧手机”不会变成“開啟”。转换靠 MutationObserver 处理新出现的文字；输入框不转；带 `data-zh-keep` 的不转；CSS 伪元素里的字（发送、结束通话）在 `chat.css` 末尾按 `:root[lang^="zh-Hant"]` 另写。
+  - 默认：浏览器语言是 zh-TW / zh-HK / zh-Hant 时为繁体，否则简体；设置 → 通用 → 多语言环境 可切换，选择存在 localStorage `namjoon-zh`。切回简体会重新载入页面（进度不丢）。
+- 新数据文件 `data/player-extras.js`（在 group.js 之后载入）：
+  - `moreTopics`：私聊新话题，`getTopic()` 最先匹配。love、busted、didi、practice、downstairs、songwriting、callAsk、complain、goSleep、nothing、askIsMember（会让对方更快起疑）、proud、dream、takeCare、worry、wakeMe、insult。每人 before / after 轮换，`{哥}` 规则同转账。
+  - `nameSpam`：连着叫同一个人的名字，第三次起换着回；叫名字不再触发“你不是南俊吧？”。
+  - 群聊新话题：ignored、love、plan、buy、ok、funny、me，以及只 @ 某人时的 `called`。
+- 引擎另改：“我是小猫”这类也算报名字（排除 我是认真的 / 粉丝 / 学生 等）；“被你发现了”算承认；短句 ack 补了 可以 / 好吧好吧 / 行行行 / 我看看。

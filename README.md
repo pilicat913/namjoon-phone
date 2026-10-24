@@ -19,3 +19,7 @@
 - data/assets.js：头像、照片、文件与音频槽位
 
 原框架署名：made by 霹雳小猫。
+
+## 第三方组件
+
+- 简繁转换：[opencc-js](https://github.com/nk2028/opencc-js) 1.0.5（MIT License，Copyright (c) 2020-2021 The nk2028 Project），文件在 `vendor/opencc/`，许可证见 `vendor/opencc/LICENSE`。

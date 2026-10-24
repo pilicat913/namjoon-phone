@@ -786,7 +786,18 @@
         h('div', { class: 'i-group' }, row(null, '关于本机', '', about), row(null, '软件更新')),
         h('div', { class: 'i-group' }, row(null, '用量'), row(null, 'Siri')),
         h('div', { class: 'i-group' }, row(null, '自动锁定', '1 分钟'), row(null, '密码锁定', '立即')),
-        h('div', { class: 'i-group' }, row(null, '日期与时间'), row(null, '键盘'), row(null, '多语言环境', '简体中文')))));
+        h('div', { class: 'i-group' }, row(null, '日期与时间'), row(null, '键盘'), row(null, '多语言环境', window.ZH ? window.ZH.label() : '简体中文', () => langPage())))));
+    }
+    /* 简体 / 繁體 显示切换（读者打字两种都认） */
+    function langPage() {
+      const check = '<svg viewBox="0 0 16 13" width="16" height="13"><path d="M1.5 7l4.5 4.5L14.5 1.5" fill="none" stroke="#385487" stroke-width="2.6"/></svg>';
+      const cur = window.ZH ? window.ZH.mode : 'cn';
+      const opt = (m, t) => h('button', { class: 'i-row', type: 'button', onclick: () => { if (window.ZH && m !== window.ZH.mode) { window.ZH.setMode(m); nav.pop(); nav.pop(); } } },
+        h('div', { class: 'i-main' }, h('div', { class: 'i-t', 'data-zh-keep': '' }, t)), m === cur ? html(check) : null);
+      nav.push(h('div', { class: 'ios pinstripe settings' }, navBar(nav, '通用', '多语言环境'), h('div', { class: 'i-scroll' },
+        h('div', { class: 'i-sec-h' }, '语言'),
+        h('div', { class: 'i-group' }, opt('cn', '简体中文'), opt('tw', '繁體中文')),
+        h('p', { class: 'i-sec-foot' }, '只改变显示的文字。聊天时简体、繁体都可以打。'))));
     }
     return { back: () => nav.pop(), destroy: () => { U.sound.stop('alarm'); U.sound.stop('ring'); } };
   } };
