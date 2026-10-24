@@ -158,9 +158,10 @@
       Object.entries(readerBursts).forEach(([roomId,b])=>{
         if(b.dueAt>now)return;
         delete readerBursts[roomId];
-        if(b.group){enqueueSeq(roomId,groupReply(roomId,b.inputs));return;}
+        if(b.group){const seq=groupReply(roomId,b.inputs);window.Feedback?.flush(roomId,roomTitle(roomById(roomId)),seq.map(x=>x[1]));enqueueSeq(roomId,seq);return;}
         const totalMessages=interactiveLog.filter(m=>m.roomId===roomId&&m.from==='me'&&typeof m.content==='string').length;
         const reply=interaction.respondBatch(b.from,b.inputs,{totalMessages,photo:U.store.get('viewedPhotos',{})[roomId]||null});
+        window.Feedback?.flush(roomId,U.personName(b.from),reply.messages);
         enqueueReply(roomId,b.from,reply.messages);
       });
       U.store.set('readerBursts',readerBursts);armBursts();
@@ -378,13 +379,17 @@
       const sendBtn = h('button', { class: 'kri-send', type: 'button', 'aria-label': '发送', html: '<svg viewBox="0 0 24 24"><path d="M12 19V6M6.5 11.5L12 6l5.5 5.5"/></svg>' });
       // 发送键一直显示：没打字时是灰的，打了字变黄；手机键盘上的“发送”也能发
       const syncBtn = () => { sendBtn.classList.toggle('empty', field.value.trim().length === 0); };
+      const feedbackBar = !room.channel && window.Feedback?.mountBar();
+      if (feedbackBar) cleanups.push(() => feedbackBar.destroy());
       const send = () => {
         const text = field.value.trim(); if (!text) return;
         field.value = ''; syncBtn();
+        window.Feedback?.stage(room.id,text,feedbackBar?.take() === true);
         appendInteractive(room.id,'me',text);
         if(room.with && interaction.hasContact(room.with)) {
           queueReaderInput(room.id,room.with,text);
         } else if(room.members && S.group && room.id===S.group.roomId) queueGroupInput(room.id,text);
+        else window.Feedback?.flush(room.id,roomTitle(room),[]);
       };
       field.addEventListener('input', syncBtn);
       field.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); send(); } });
@@ -412,7 +417,9 @@
         sendBtn);
       syncBtn();
       if (room.channel) { input.style.display = 'none'; panel.remove(); }
-      page.append(head, msgs, input, panel);
+      page.append(head, msgs);
+      if (feedbackBar) page.append(feedbackBar.el);
+      page.append(input, panel);
       const under = stack[stack.length - 1];
       win.append(page);
       if (!instant) { under.el.classList.add('under'); }
