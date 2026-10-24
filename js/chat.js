@@ -202,7 +202,10 @@
     const bare=text.trim().toLowerCase().replace(/[啊呀！!~～。.]+$/,'').replace(/^(.+?)\1+$/,'$1');
     const nameOnly=!at&&lead&&(aliases[lead]||[]).some(a=>a.toLowerCase()===bare);
     const onlyAt=(at&&!text.replace(/@\s*[^\s@]+/g,'').trim())||nameOnly;
-    const key=onlyAt&&G.lead[lead].called?'called':topic&&G.lead[lead][topic.key]?topic.key:'any';
+    // 话里点名了谁（不是随便挑的人），而且这个话题有“说的就是我”的版本，就用那一版
+    const namedLead=!!(at||members.find(id=>(aliases[id]||[]).some(a=>a.length>=2&&!/^[a-z]+$/i.test(a)&&text.includes(a))));
+    let key=onlyAt&&G.lead[lead].called?'called':topic&&G.lead[lead][topic.key]?topic.key:'any';
+    if(topic&&namedLead&&G.lead[lead][topic.key+'Me'])key=topic.key+'Me';
     // 群里骂人：第一次有人回，第二次大家不接话，第三次起没人理
     if(key==='harshG'){st.harsh=(st.harsh||0)+1;if(st.harsh>=2){U.store.set('groupState',st);return st.harsh===2?[['sx','……南俊 先睡吧'],['yq','……']]:[];}}
     const rounds=G.lead[lead][key],n=st.used[lead+':'+key]||0;st.used[lead+':'+key]=n+1;
@@ -216,7 +219,8 @@
       const rest=others.filter(id=>!pref.includes(id)).sort(()=>Math.random()-.5);
       const count=onlyAt?1:(Math.random()<.55?2:1);
       [...pref,...rest].slice(0,count).forEach((f,i)=>{
-        const fk=topic&&!onlyAt&&G.lead[f][topic.key]?topic.key:null;
+        const ok=key.endsWith('Me')&&G.lead[f][topic.key+'Others']?topic.key+'Others':topic.key;
+        const fk=topic&&!onlyAt&&G.lead[f][ok]?ok:null;
         const pool=fk?G.lead[f][fk]:(G.follow&&G.follow[f]);
         if(!pool||!pool.length)return;
         const uk=f+':'+(fk||'follow'),m=st.used[uk]||0;st.used[uk]=m+1;

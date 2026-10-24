@@ -17,6 +17,19 @@
     yq: [['……那我是小猪', '我睡了']], sx: [['那哥不走ㅋㅋ'], ['哥最后一个走']], hx: [['我不走！！ㅋㅋㅋㅋ']],
     jw: [['ㅋㅋ那我也不走']], ty: [['我最后一个走ㅋㅋ']], jy: [['……那我也不走']]
   };
-  for (const [id, r] of Object.entries(piggy)) if (G.lead[id]) G.lead[id].piggy = r;
+  // 三种“小猪”：谁先走谁是小猪（piggyLeave）/ 点名某人是小猪（piggyMe 本人回，piggyOthers 旁人起哄）/ 只说小猪（piggy）
+  const piggyAny = {
+    yq: [['……谁是小猪']], sx: [['ㅋㅋ谁是小猪'], ['反正不是哥']], hx: [['小猪！！ㅋㅋㅋㅋ', '谁呀']],
+    jw: [['ㅋㅋ谁是小猪呀']], ty: [['ㅋㅋㅋㅋ谁']], jy: [['……不是我ㅋㅋ']]
+  };
+  const piggyMe = {
+    yq: [['……你才是']], sx: [['哥这么帅', '怎么会是猪ㅋㅋ']], hx: [['我不是猪！！', '我是松鼠！！']],
+    jw: [['ㅋㅋ我才不是', '我在减肥呢']], ty: [['我不是小猪！ㅋㅋ', '我是小熊']], jy: [['……我才不是猪', '……就吃得多一点ㅋㅋ']]
+  };
+  const piggyOthers = {
+    yq: [['ㅋ']], sx: [['ㅋㅋㅋㅋ']], hx: [['ㅋㅋㅋㅋㅋㅋ']], jw: [['ㅋㅋ好可爱']], ty: [['ㅋㅋㅋㅋ同意']], jy: [['ㅋㅋ']]
+  };
+  for (const id of Object.keys(piggy)) if (G.lead[id]) Object.assign(G.lead[id], { piggyLeave: piggy[id], piggy: piggyAny[id], piggyMe: piggyMe[id], piggyOthers: piggyOthers[id] });
+  G.topics.unshift({ key: 'piggyLeave', re: '先(?:离开|走|睡|下线)的?(?:人)?是(?:小)?猪|谁先.{0,4}谁是(?:小)?猪', prefer: ['sx', 'hx', 'ty'] });
   const hg = G.topics.find((t) => t.key === 'harshG'); if (hg) hg.re = '废物|鸡歪|垃圾|种猪|滚出来|出来道歉|别打扰|傻逼|滚|去死|畜生|畜牲|白痴';
 })();
