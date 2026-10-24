@@ -246,7 +246,7 @@
         if(p.name)return result(id,p,fillName(rotate(id,p,'recall',RX().recallName?.[id])||[p.name],p.name),'recall');
         p.pendingName=true;return result(id,p,rotate(id,p,'recallNo',RX().recallNoName?.[id])||['你还没说呢'],'name');
       }
-      const nameMatch=!/^我叫你/.test(String(raw).trim()) && String(raw).trim().match(/^(?:我叫|你可以叫我|你叫我|叫我|我是)([\p{L}\p{N}_\-]{1,12}?)(?:就行|就好|就可以|吧|呀|啊)?[。！!～~]?$/u);
+      const nameMatch=!/^我叫你/.test(String(raw).trim()) && String(raw).trim().match(/^(?:我叫|你可以叫我|你叫我|叫我|我是)([\p{L}\p{N}_\-]{1,12}?)(?:就行|就好|就可以|吧|呀|啊)?[。！!～~ㅋ]*$/u);
       const plainName=/^[\p{L}\p{N}_\-]{2,6}$/u.test(String(raw).trim()) && !getTopic(raw,p,context) && !/^(?:我|你|他|她|怎么|什么|为啥|以后|未来)|电话|视频|明天|出道/.test(t);
       const iAmName=nameMatch&&/^我是/.test(String(raw).trim())&&!/^[阿啊呀哦嗯]$|南俊|南菌|粉丝|阿米|army|认真|开玩笑|故意|说|谁|你|他|她|真|来|想|要|在|不|觉得|怕|担心|学生|人|的$|了$|啊$|吗$|呢$|吧$|哥|弟|妹|姐|朋友|同学|练习生|成员|队长|老幺/i.test(nameMatch[1])&&nameMatch[1].length<=6;
       if(p.identity!=='known' && nameMatch && (/^(?:我叫|叫我|你叫我|你可以叫我)/.test(String(raw).trim())||iAmName)) {

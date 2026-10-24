@@ -2,7 +2,7 @@
 window.STORY.nameReplies={
   aliases:{
     me:['金南俊','南俊','南菌','俊尼','拉蒙','破坏王','rm','rapmonster','namjoon','kimnamjoon','김남준','남준'],
-    yq:['闵玧其','玧其','闵允其','允其','糖糖','阿糖','糖爷','闵糖','suga','agustd','yoongi','minyoongi','민윤기','윤기','슈가'],
+    yq:['闵玧其','玧其','闵允其','允其','闵运气','糖糖','阿糖','糖爷','闵糖','suga','agustd','yoongi','minyoongi','민윤기','윤기','슈가'],
     sx:['金硕珍','硕珍','珍哥','阿珍','珍珍','金石进','jin','seokjin','kimseokjin','김석진','석진','진'],
     hx:['郑号锡','号锡','号锡锡','锡锡','厚比兄','厚比','hobi','hope','jhope','hoseok','junghoseok','정호석','호석','홉이'],
     jw:['朴智旻','智旻','智旻尼','旻旻','鸡米','鸡米妮','jimin','parkjimin','박지민','지민'],

@@ -215,3 +215,9 @@ node tests/viewport.cjs
 
 - 引擎：被识破、正在问名字时，“我是小喵（是army喔）”也算报名字（取“是 / ，”前面那段）；“叫哥就行 / 叫我怒那”把这个称呼当名字；夸人认“萌”；加油认 화이팅 / 파이팅 / fighting。
 - 新文件 `data/player-extras-9.js`：diet、wishReq、tiredMe、worryWhat、hair、futureSong（玩家说出未来的歌名：成员觉得是好名字、记下来）、yeontan（碳尼）、firstWin（拿一位）、cantGo、fromAbroad（我在台湾）、intro，放宽若干；群聊新增 futureSongG、dietG、youngG。
+
+## 2026-10-25 第十九轮：语库第十批（玩家数据截至 2026-10-24 17:58:44 UTC）
+
+- 新文件 `data/player-extras-10.js`。原则：告白（“我是你对象”“149的女生”“marry me”）温柔带过、不升级暧昧；有人说“我喜欢的是男生 / 怕被粉丝知道”时成员接纳、不开玩笑（comingOut）；抽烟一律拒绝；群里擦边话（多P、蕾丝）岔开（deflect）；学生说课业好累、焦虑时认真安慰（studentLife / worryG）。
+- 另有 tattoo、toFans、callMeBaby、autograph、meetDate（如“11/22见”）、walk、myBday、whyIdol（柾国：看了南俊哥的rap就想来）、joke（硕珍的冷笑话）、farewell（“明天还能见面吗”）、momGift、pain 等；群聊 studentLife、outNight、chant、sign、dm，放宽若干。
+- 引擎：名字后面可以带多个感叹号 / ㅋ（“我叫jae!!”）；玧其别名加“闵运气”。
