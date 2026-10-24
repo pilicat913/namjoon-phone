@@ -180,3 +180,8 @@ node tests/viewport.cjs
 - 群聊（`chat.js` 的 `groupReply`）：第一个人回完后，再有 1～2 个人接着回读者这句（话题优先人选先上；同话题用他们自己的台词，没有就用 `group.follow` 的通用反应），之后才以 35% 的概率岔开闲聊（原来 70%）。只 @ 一个人时，一半概率再有一个人插一句。群里的 ❤️ 也当成“爱”。
 - 新文件 `data/player-extras-4.js`：私聊新增 distress（说“想死”时成员会担心、劝对方找身边的人说，不再回“ㅋㅋ”）、sad、cryComfort、didWell、noisy、cook、remind、promise、brain、askAbout、guessMe、eatUp、checkBag、treatMe、back、listen、homesick、sleepTogether、ateAlready、okQ、chickenLove、rude；放宽若干旧话题。群聊新增 distressG、hug、roach、broke、photoReq、cute、ready、inspire，放宽 together / lost / chores / sleepNag / wakeG / love。
 - 引擎：😭🥺 等哭脸当“呜”；单发“阿米”算粉丝承认；“不是南俊 / 我不是rm / 你认识金南俊吗”算承认；“什么 / 怎么说 / 你说啥”等归到 why；短句 ack 再补一批。
+
+## 2026-10-25 第十三轮：语库第五批（玩家数据截至 2026-10-24 14:58:10 UTC）
+
+- 新文件 `data/player-extras-5.js`：私聊新增 notAgain（已识破后再说“我不是南俊”→“知道啦 你说过了”）、howUsually（“那我平时怎么叫你”）、kiss、letGo、comeHere、frustrated（“你好难沟通”→成员道歉请对方再说一遍）、whyHappy、wantGift、favor、friend、stillUp、morning、earlySleep，放宽若干旧话题。群聊新增 foundPhone（在群里说捡到手机 / 找失主：大家照旧以为是南俊，但会接这个话，如“南俊你手机丢了？？”）、quiet、kissG、pet、game，扩充 happy / together / food / yogurt / plan / ignored / wakeG / bye / greet / me。
+- 引擎：名字里带“猜”或单字“阿 / 啊”不当名字；“猜猜看”算猜我是谁；“在哪儿”“为什么奇怪”能认。群聊判断话题前先去掉 @某人。柾国别名加 国儿 / 小国 / 柾guo / 小果。

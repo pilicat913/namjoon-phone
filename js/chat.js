@@ -195,7 +195,8 @@
     let lead=null;const at=text.match(/@\s*([^\s@]+)/);
     if(at)lead=named(at[1]);
     if(!lead)lead=members.find(id=>(aliases[id]||[]).some(a=>a.length>=2&&!/^[a-z]+$/i.test(a)&&text.includes(a)))||null;
-    const topic=G.topics.find(tp=>new RegExp(tp.re,'i').test(low));
+    const lowNoAt=low.replace(/@\s*[^\s@]+/g,'').trim()||low;
+    const topic=G.topics.find(tp=>new RegExp(tp.re,'i').test(lowNoAt));
     if(!lead){const pool=(topic?topic.prefer:members).filter(id=>id!==st.lastLead&&members.includes(id));lead=pool[Math.floor(Math.random()*pool.length)]||members[0];}
     const bare=text.trim().toLowerCase().replace(/[啊呀！!~～。.]+$/,'').replace(/^(.+?)\1+$/,'$1');
     const nameOnly=!at&&lead&&(aliases[lead]||[]).some(a=>a.toLowerCase()===bare);

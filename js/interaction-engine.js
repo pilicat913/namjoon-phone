@@ -98,14 +98,14 @@
       const t=normalize(raw);
       const mt=moreTopic(t);if(mt)return mt;
       if(/^(?:宝宝|宝贝|宝|亲爱的|老婆|老公|亲亲|欧巴|欧っぱ|오빠|oppa)(?:啊|呀|呢)?$/.test(t))return 'petName';
-      if(/猜猜我是谁|你猜我是谁|猜我是谁|知道我是谁吗|觉得我是谁|认出我了吗/.test(t))return 'guess';
+      if(/猜猜我是谁|你猜我是谁|猜我是谁|猜猜看|你猜猜|知道我是谁吗|觉得我是谁|认出我了吗/.test(t))return 'guess';
       if(/想你|想死你|好想见你/.test(t))return 'miss';
       if(/抱抱|抱一下|抱我/.test(t))return 'hug';
       if(/谢谢|谢啦|感谢|多谢/.test(t))return 'thanks';
       if(/对不起|抱歉|不好意思|sorry/.test(t))return 'sorry';
       if(/骗你的|逗你的|开玩笑|逗你玩|骗到你了|哈哈你信了/.test(t))return 'tease';
       if(/^(?:真的(?:吗|啊|呀)?|真的假的|真假|当真|真的吗|不会吧|你没骗我吧|是吗)$/.test(t))return 'really';
-      if(/^(?:为什么|为啥|怎么了|咋了|怎么回事|什么意思|啥意思|什么|什么呀|怎么说|你说什么|你又说啥呢|你说啥|什么怎么了|怎么啦|这是什么意思|哥你这是什么意思|怎么这样问|为什么这样说|怎么了哥|怎么了呢哥)(?:啊|呀|呢)?$/.test(t))return 'why';
+      if(/^(?:为什么|为啥|怎么了|咋了|怎么回事|什么意思|啥意思|什么|什么呀|怎么说|你说什么|你又说啥呢|你说啥|什么怎么了|怎么啦|这是什么意思|哥你这是什么意思|说什么|为什么这么说|为什么这么说呢|为什么奇怪|哪里奇怪|怪怪的|怎么这样问|为什么这样说|怎么了哥|怎么了呢哥)(?:啊|呀|呢)?$/.test(t))return 'why';
       if(/^(?:不知道|不晓得|不知道说什么|不知道聊什么|没想好|想不起来)(?:啊|呀|呢)?$/.test(t))return 'dontKnow';
       if(/你(?:是不是|是|在)?生气|别生气|生气了吗/.test(t))return 'angry';
       if(/等我|等一下|等下|稍等|我去一下|一会回来|待会聊/.test(t))return 'wait';
@@ -113,7 +113,7 @@
       if(/我(?:好|很|太|有点)?困|我(?:要|想)休息|头好痛|头疼|不舒服|生病了/.test(t))return 'rest';
       if(/好无聊|无聊死了|陪我聊|陪哥聊|聊聊天|陪陪我|没人陪|一个人好孤单|好孤独/.test(t))return 'lonely';
       if(/听什么歌|推荐.*歌|推荐.*音乐|我在听歌|喜欢什么歌|最近听什么/.test(t))return 'music';
-      if(/你(?:现在)?在哪|你在哪里|回宿舍了吗|还在公司吗/.test(t))return 'where';
+      if(/^在哪(?:里|儿)?$|你(?:现在)?在哪|你在哪里|回宿舍了吗|还在公司吗/.test(t))return 'where';
       if(/天气|下雨|好冷|好热|下雪|出太阳/.test(t))return 'weather';
       if(/^(?:我)?(?:不是|不是啊|不是呀|不是哦|不对|才不是|没有|没有啊|没有啦|没|no)$/.test(t))return 'no';
       if(/^(?:是|是呀|是啊|是的|对|对啊|对呀|没错|当然|嗯是的|yes)$/.test(t))return 'yes';
@@ -232,7 +232,7 @@
       }
       const nameMatch=!/^我叫你/.test(String(raw).trim()) && String(raw).trim().match(/^(?:我叫|你可以叫我|叫我|我是)([\p{L}\p{N}_\-]{1,12})(?:就行|吧|呀|啊)?[。！!～~]?$/u);
       const plainName=/^[\p{L}\p{N}_\-]{2,6}$/u.test(String(raw).trim()) && !getTopic(raw,p,context) && !/^(?:我|你|他|她|怎么|什么|为啥|以后|未来)|电话|视频|明天|出道/.test(t);
-      const iAmName=nameMatch&&/^我是/.test(String(raw).trim())&&!/南俊|南菌|粉丝|阿米|army|认真|开玩笑|故意|说|谁|你|他|她|真|来|想|要|在|不|觉得|怕|担心|学生|人|的$|了$|啊$|吗$|呢$|吧$|哥|弟|妹|姐|朋友|同学|练习生|成员|队长|老幺/i.test(nameMatch[1])&&nameMatch[1].length<=6;
+      const iAmName=nameMatch&&/^我是/.test(String(raw).trim())&&!/^[阿啊呀哦嗯]$|南俊|南菌|粉丝|阿米|army|认真|开玩笑|故意|说|谁|你|他|她|真|来|想|要|在|不|觉得|怕|担心|学生|人|的$|了$|啊$|吗$|呢$|吧$|哥|弟|妹|姐|朋友|同学|练习生|成员|队长|老幺/i.test(nameMatch[1])&&nameMatch[1].length<=6;
       if(p.identity!=='known' && nameMatch && (/^(?:我叫|叫我|你可以叫我)/.test(String(raw).trim())||iAmName)) {
         const name=nameMatch[1].replace(/(?:就行|吧|呀|啊)$/,'');
         if(!/南俊|南菌|什么|^啥$/.test(name)){
@@ -243,7 +243,7 @@
       }
       if(p.identity==='known' && (p.pendingName || /^(?:我叫|叫我|你可以叫我)/.test(String(raw).trim())) && (nameMatch || plainName)) {
         const name=(nameMatch?nameMatch[1]:String(raw).trim()).replace(/(?:就行|吧|呀|啊)$/,'');
-        if(!/叫你|在吗|干嘛|你好|你猜|哈哈|ㅋㅋ|不知道|不告诉|不接|不是|南俊|什么|^啥$|^好$|^嗯$|加油|晚安|喜欢|爱你/.test(name)) {
+        if(!/叫你|在吗|干嘛|你好|你猜|猜|哈哈|ㅋㅋ|不知道|不告诉|不接|不是|南俊|什么|^啥$|^好$|^嗯$|^[阿啊呀哦嗯]$|加油|晚安|喜欢|爱你/.test(name)) {
           p.name=name;p.pendingName=false;
           return result(id,p,fillName(rotate(id,p,'greet',RX().greet?.[id])||['好 {name}','我记住了'],name),'name');
         }
