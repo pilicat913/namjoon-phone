@@ -10,7 +10,7 @@
     }
     return null;
   }
-  const shortReply = /^(?:ㅋ+|哈+)?(?:喔+|内|네|넵|응|ok|好[～~]|嗯+|恩+|哦+|噢+|好+(?:的|呀|啊|哦|嘞|吧)?|行(?:吧|啊)?|知道(?:了|啦)|收到(?:了|啦)?|哈哈+|呵呵+|嘿嘿+|ㅋㅋ+|ㅎㅎ+|ok+|okay|yes|嗯嗯|在呢|在的|在啊|在|在这|我在|这样啊|原来如此|原来是这样|懂了|明白了?|了解|(?:可以)+(?:啊|呀|的)?|(?:好吧)+|嗯呢|好嘞|(?:行)+|我看看|看见了|看到了)$/;
+  const shortReply = /^(?:ㅋ+|哈+)?(?:喔+|内|네|넵|응|ok|好[～~]|嗯+|恩+|哦+|噢+|好+(?:的|呀|啊|哦|嘞|吧)?|行(?:吧|啊)?|知道(?:了|啦)|收到(?:了|啦)?|哈哈+|呵呵+|嘿嘿+|ㅋㅋ+|ㅎㅎ+|ok+|okay|yes|嗯嗯|在呢|在的|在啊|在|在这|我在|这样啊|原来如此|原来是这样|懂了|明白了?|了解|(?:可以)+(?:啊|呀|的)?|(?:是的)+|(?:喔+|哦+)好|当然|(?:好吧)+|嗯呢|好嘞|(?:行)+|我看看|看见了|看到了)$/;
   // 接话用的肯定 / 否定开头
   const YES = /^(?:嗯|恩|对|是|在|要|会|有|当然|没错|yes|弄完|完了|好了|回来了|到了|快了|马上|真的|确定)/;
   const NO = /^(?:不|没|还没|别|no|才不)/;
@@ -98,7 +98,7 @@
       const t=normalize(raw);
       const mt=moreTopic(t);if(mt)return mt;
       if(/^(?:宝宝|宝贝|宝|亲爱的|老婆|老公|亲亲|欧巴|欧っぱ|오빠|oppa)(?:啊|呀|呢)?$/.test(t))return 'petName';
-      if(/猜猜我是谁|你猜我是谁|猜我是谁|知道我是谁吗|认出我了吗/.test(t))return 'guess';
+      if(/猜猜我是谁|你猜我是谁|猜我是谁|知道我是谁吗|觉得我是谁|认出我了吗/.test(t))return 'guess';
       if(/想你|想死你|好想见你/.test(t))return 'miss';
       if(/抱抱|抱一下|抱我/.test(t))return 'hug';
       if(/谢谢|谢啦|感谢|多谢/.test(t))return 'thanks';
@@ -117,7 +117,7 @@
       if(/天气|下雨|好冷|好热|下雪|出太阳/.test(t))return 'weather';
       if(/^(?:我)?(?:不是|不是啊|不是呀|不是哦|不对|才不是|没有|没有啊|没有啦|没|no)$/.test(t))return 'no';
       if(/^(?:是|是呀|是啊|是的|对|对啊|对呀|没错|当然|嗯是的|yes)$/.test(t))return 'yes';
-      if(/^(?:哈哈+|嘿嘿+|嘻嘻+|ㅋㅋ+|ㅎㅎ+|笑死|笑死我了)$/.test(t))return 'laugh';
+      if(/^(?:哈哈+|嘿嘿+|嘻嘻+|ㅋㅋ+|ㅎㅎ+|笑死|笑死我了|ㄎ+)$/.test(t))return 'laugh';
       if(/怎么(?:不接|挂|没接)|为什么(?:不接|挂|没接)|干嘛(?:不接|挂)|接(?:我)?(?:的)?(?:电话|视频)|别挂|又挂|挂我|不接电话/.test(t))return 'call';
       if(/^(?:我(?:真的|很|好|特别|有点|太|最近)?(?:累|难过|不开心|心情不好|烦|不舒服|压力大)|今天(?:好累|不开心|很累|心情不好))/.test(t))return 'tired';
       if(/晚安|拜拜|再见|明天见|我(?:先)?(?:走了|睡了|去睡|要睡|下了)|下次聊/.test(t))return 'bye';
@@ -130,9 +130,9 @@
       if(/加油|会成功|相信你|支持你|最棒|一定可以|好好做|好好练|好好表现|祝你/.test(t))return 'cheer';
       if(/你(?:们)?(?:会|很|也|有点)?紧张|紧张(?:吗|不)|出道|舞台|准备好|明天(?:要)?(?:上台|表演)|怕不怕/.test(t))return 'nervous';
       if(/睡(?:觉)?了[吗嘛没]|睡了没有|没睡|还醒|困不困|你(?:现在|也|很|不)?困|失眠|睡不着/.test(t))return 'sleep';
-      if(/吃了[吗嘛没]|吃了没有|吃饭|吃什么|饿不饿|你(?:也|不|很)?饿|吃没/.test(t))return 'food';
-      if(/干[嘛吗啥]|干什么|做什么|在忙|忙不忙|忙吗|练什么|录什么/.test(t))return 'activity';
-      if(/^(?:在吗|在不在|人呢|喂+|出来|出来聊聊|在不|在嘛|有人吗|回我|理理我|你好(?:呀|啊)?|您好|嗨|hi|hello|哥|哥哥|玧其|硕珍|号锡|智旻|泰亨|柾国|闵玧其|金硕珍|郑号锡|朴智旻|金泰亨|田柾国)(?:哥)?$/.test(t))return 'hello';
+      if(/吃了[吗嘛没]|吃了没有|吃饱了[吗没]|吃饱没|吃饭|吃什么|饿不饿|你(?:也|不|很)?饿|吃没/.test(t))return 'food';
+      if(/干[嘛吗啥]|干什么|做什么|在做什么|做些什么|在忙|忙不忙|忙吗|练什么|录什么/.test(t))return 'activity';
+      if(/^(?:在吗|在不在|人呢|喂+|出来|出来聊聊|在不|在嘛|有人吗|回我|理理我|你还在吗|还在吗|你在吗|你好(?:呀|啊)?|您好|嗨|hi|hello|哥|哥哥|玧其|硕珍|号锡|智旻|泰亨|柾国|闵玧其|金硕珍|郑号锡|朴智旻|金泰亨|田柾国)(?:哥)?$/.test(t))return 'hello';
       if(/你是谁|叫什么名字|你叫什么/.test(t))return 'who';
       if(shortReply.test(t)||!t)return 'ack';
       if(p.lastTopic==='tired' && raw.length>3 && !/吗|什么|是不是|怎么|为什么/.test(raw))return 'followup';
@@ -158,6 +158,7 @@
     }
     function respond(id,raw,context={}) {
       if(root.ZH)raw=root.ZH.toSimp(String(raw||'')); // 繁体输入先统一成简体
+      raw=String(raw||'').replace(/[❤♥💕💗💖💓💘💞🫶]\uFE0F?/gu,'爱'); // “我❤️你”
       const p=person(id),t=normalize(raw);
       if(p.schema!==2){p.schema=2;p.pendingIdentity=false;p.pendingName=false;p.identityQuestion='';}
       // 妈妈 / 经纪人 / 方PD：文字消息不回，一直挂着“1”；只有打电话没接时回一句
@@ -172,7 +173,7 @@
       const fan=!deniedFan && /(?:我是|我也是|其实我是|作为)(?:你们的|你的|个|一名|南俊的|防弹的|bts的)?(?:粉丝|army|阿米)|^你们的粉丝$/.test(t);
       const notSelf=/(?:我(?:其实|真的|确实|并)?不是(?:金)?南(?:俊|菌)|我不是(?:他|本人)|我不是南俊哥)|^(?:被(?:你)?发现了|被(?:你)?认出来了|露馅了|你发现了|你认出来了|不是他|不是本人)(?:啊|呀|ㅋ+|哈+)?$/.test(t);
       const foundPhone=/(?:捡到|捡了|拿到)(?:了)?(?:这部|这个|他的|南俊的|一部)?手机|手机不是我的|(?:这是|是)(?:他|南俊|金南俊)的手机|手机还给|还给南俊/.test(t) && !/(?:没|没有|不是我)(?:捡到|拿到)/.test(t);
-      const asksNamjoon=/南(?:俊|菌)(?:哥)?(?:在哪|呢|去哪|回来了吗|什么时候回来|现在在哪)/.test(t);
+      const asksNamjoon=/南(?:俊|菌)(?:哥)?(?:在哪|呢|去哪|回来了吗|什么时候回来|现在在哪)|(?:有|你)?(?:看到|见到)他(?:了)?吗|他(?:去)?(?:在)?哪(?:里|儿)?了?吗?$/.test(t);
       // 成员已经起疑（说过“你今天怎么怪怪的”）时，单说一句“我不是”也算承认
       const bareDeny=(p.hinted||p.identity==='suspect')&&/^(?:嗯|对|其实)?我(?:真的|确实)?不是(?:啊|呀|啦|哦)?$/.test(t);
       if(p.identity!=='known' && (fan||notSelf||foundPhone||asksNamjoon||bareDeny) && !claimSelf) {
@@ -252,7 +253,7 @@
         const hookLines=followUp(id,awaiting,raw,t,p);
         if(hookLines){p.unmatchedCount=0;p.ackCount=0;return result(id,p,hookLines,'followup');}
       }
-      const future=/你(?:们)?以后|你(?:们)?将来|未来|20(?:1[4-9]|[2-9]\d)年|格莱美|dynamite|butter/.test(t);
+      const future=!moreTopic(t)&&/你(?:们)?以后|你(?:们)?将来|未来|20(?:1[4-9]|[2-9]\d)年|格莱美|dynamite|butter/.test(t);
       if(future) {
         if(p.identity!=='known'){return result(id,p,['你说的是以后？','我现在还不知道呢'],'future');}
         return result(id,p,['你说的是以后？','我现在还不知道呢'],'future');

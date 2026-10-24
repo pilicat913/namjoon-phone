@@ -168,3 +168,9 @@ node tests/viewport.cjs
 - 新文件 `data/player-extras-2.js`（在 player-extras.js 之后载入）：私聊新增 phoneBack、youWeird、denyOdd、excited、dorm、waitYou、goodJob、wakeUp、youToo、give、mistake、eatOut、offerFood、hungry、charge、whenBack、likeIt、family、youKnow、awkward、pleaseLook、sappy、comfort、noThanks、meToo、thin、go、lookingFor、noteFix、tiredQ、crush；放宽 love / goSleep / askIsMember / proud 的匹配。群聊新增 sleepNag、happy、cry、praise、together、greet、what、yogurt、bug、peace、news、photoGo、crush、interj。
 - 引擎：短句 ack 认 喔 / 內 / 네 / ok / 前面带ㅋ；“睡觉了吗”“舞台”“好好练”“陪哥聊天”能认；“这是南俊的手机吗 / 手机还给南俊”算承认不是本人；号锡别名加“厚比兄”。
 - 以后的流程：作者发来新导出的消息，只针对接不住的话补各人回复，不整批重跑；补完推到 GitHub，再给一句从这批最后一条之后开始查的 SQL。
+
+## 2026-10-24 第十一轮：语库第三批（玩家数据截至 14:13:54 UTC）
+
+- 新文件 `data/player-extras-3.js`：私聊新增 futureCheer（“你以后一定会成为世界巨星”这类不再回“你说的是以后？”）、timeTravel、insistSelf、robot、maknae、careBody、secret、coming、pocketMoney、outfit、never、chores、pdSaid、danceGod、debutYay、nonsense、ready、goodIntent、slump、iNervous、drink、socks、sendMe、careful、tellYou、leader；放宽 eatOut / give / comfort / insult / songwriting / excited / crush / callAsk / offerFood / love。群聊新增 forbid、notMe、worryG、careful、chores、exercise、wakeG、bored、concert、today、alcohol、lost、scold、maknaeG，放宽若干旧话题。
+- 引擎：任何 moreTopics 命中时跳过“你说的是以后？”；“我❤️你”的爱心当成“爱”；“你有看到他吗”算问南俊在哪（承认不是本人）；“吃饱了吗”“在做些什么”“你还在吗”“你现在觉得我是谁”能认；短句 ack 补 是的是的 / 喔喔好 / 当然；ㄎㄎ 算笑。
+- 群聊：只发一个成员名字（“泰亨”“柾国柾国”）时按被 @ 处理（called）。
