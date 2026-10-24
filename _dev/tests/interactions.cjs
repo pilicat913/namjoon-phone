@@ -52,16 +52,15 @@ for(const id of Object.keys(window.STORY.interactions.members)){
   assert.equal(fourth.identity,'suspect');assert.equal(fourth.messages[0],'等等');
   assert.equal(fourth.messages[1],`你不是南俊${['jw','ty','jy'].includes(id)?'哥':''}吧？`);
   assert.equal(e.getState(id).readerMessages,4);
-  const explanation=e.respond(id,'你怎么知道');assert.ok(explanation.messages[0].includes('不会这么叫'));
-  for(const input of ['宝宝','猜猜我是谁'])assert.ok(e.respond(id,input).messages.length);
+  // 被问“你不是南俊吧？”时回“你怎么知道”= 承认，并先解释怎么看出来的
+  const explanation=e.respond(id,'你怎么知道');assert.ok(explanation.messages[0].includes('不会这么叫'));assert.equal(explanation.identity,'known');
+  // 另起一局：回“我是南俊”= 对方信了，回到“以为是南俊”
+  db={};e=create();for(const input of ['宝宝','欧巴','吃了嘛','睡了没有'])e.respond(id,input);
   assert.equal(e.getState(id).identity,'suspect');
-  assert.equal(e.respond(id,'我是南俊').identity,'suspect');
-  const retracted=e.respond(id,'不是');assert.equal(retracted.identity,'suspect');
-  assert.ok(retracted.messages.some(x=>/刚才|不是了/.test(x)));
-  assert.ok(!retracted.messages.some(x=>/没发现|没认出/.test(x)));
+  assert.equal(e.respond(id,'我是南俊').identity,'unknown');
   const fallback=e.respond(id,'橘子飞过四十七个玻璃房间');
   assert.equal(fallback.topic,'unmatched');assert.ok(fallback.messages.length);
-  assert.equal(e.respond(id,'不是').identity,'suspect'); // Unrelated short negation cannot confess identity.
+  assert.equal(e.respond(id,'不是').identity,'unknown'); // 没被问的时候，单说“不是”不算承认
   assert.equal(e.respond(id,'我不是南俊').identity,'known');
   for(const input of ['我叫小猫','爱你','想你了','抱抱','谢谢','对不起','骗你的','真的假的','为什么','不知道','你生气了吗','等我一下','我在写作业','我想休息','好无聊','推荐一首歌','你在哪','下雨了','这句话没有任何匹配']){
     const r=e.respond(id,input);assert.ok(r.messages.length,`${id}: ${input}`);assert.equal(r.identity,'known');
@@ -77,10 +76,9 @@ assert.equal(e.getState('jy').identity,'unknown');assert.equal(e.getState('jy').
 assert.ok(e.getState('jy').hinted);
 assert.equal(e.respond('jy','吃了吗').identity,'unknown');
 assert.equal(e.respond('jy','睡了没').identity,'suspect');
-assert.equal(e.respond('jy','我是南俊').identity,'suspect');
-assert.equal(e.respond('jy','不是').identity,'suspect');
+assert.equal(e.respond('jy','我是南俊').identity,'unknown');
 db={conversationState:{jy:{identity:'suspect',pendingIdentity:true,turns:3,used:{}}}};e=create();
-assert.equal(e.respond('jy','不是').identity,'suspect'); // Migrate old ambiguous pending questions safely.
+assert.equal(e.respond('jy','不是').identity,'suspect'); // 旧存档里含糊的待答问题不直接当承认
 db={};e=create();
 assert.equal(e.respondBatch('sx',['喂','吃了吗','嗯','晚安']).identity,'unknown'); // 普通聊天不会第 4 句就起疑
 const hint=e.respond('sx','在干嘛');assert.equal(hint.identity,'unknown');assert.ok(e.getState('sx').hinted);
@@ -157,7 +155,7 @@ for(const id of Object.keys(window.STORY.interactions.members)){
   const r=e.respond(id,answer);assert.equal(r.identity,'known',id+answer);assert.ok(e.getState(id).pendingName);
  }
  db={};e=create();assert.ok(toSuspect(id));
- assert.equal(e.respond(id,'是').identity,'suspect');
+ assert.equal(e.respond(id,'是').identity,'unknown'); // 答“是”= 对方信了
 }
 console.log('“你不是南俊吧？”的是／不是回答检查通过');
 
@@ -189,3 +187,12 @@ assert.equal(e.respond('ty','我不是').identity,'known');
 e.respond('ty','我叫霹雳小猫');
 assert.ok(e.respond('ty','没有啦 你很可爱').messages.some(x=>x.includes('可爱')));
 console.log('“哪里不一样了”、“我不是”、夸人接话检查通过');
+
+// 被问“你不是南俊吧？”后的各种回答
+for(const id of Object.keys(window.STORY.interactions.members)){
+ for(const [ans,want] of [['不是','known'],['不','known'],['我不是','known'],['我不是金南俊','known'],['我不是南俊','known'],['你怎么知道','known'],['我是啊','unknown'],['我是','unknown'],['是','unknown'],['我是南俊啊','unknown'],['我是金南俊','unknown']]){
+  db={};e=create();assert.ok(toSuspect(id));
+  assert.equal(e.respond(id,ans).identity,want,id+' '+ans);
+ }
+}
+console.log('“你不是南俊吧？”各种回答（承认 / 自称本人）检查通过');

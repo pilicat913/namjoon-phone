@@ -46,11 +46,11 @@
       if(p.schema!==2){p.pendingIdentity=false;p.pendingName=false;p.identityQuestion='';p.schema=2;}
       // 起疑分两步：先说一句“你今天怎么怪怪的”，再过两句才直接问
       if(data.members[id]&&p.identity==='unknown'&&topic!=='call'&&topic!=='identity'){
-        const n=p.readerMessages||0,score=n+(p.odd||0)*2,at=SUSPECT_AT[id]||6;
+        const n=(p.readerMessages||0)-(p.base||0),score=n+(p.odd||0)*2,at=SUSPECT_AT[id]||6;
         if(p.hinted&&score>=at&&n>=(p.hintAt||0)+2&&topic!=='followup'){
           p.identity='suspect';p.pendingIdentity=true;p.identityQuestion='notNamjoon';
           lines=['等等',`你不是南俊${['jw','ty','jy'].includes(id)?'哥':''}吧？`];topic='identity';
-        } else if(!p.hinted&&score>=at-2&&!['unmatched','ack','followup','no','yes'].includes(topic)){
+        } else if(!p.hinted&&score>=at-2&&n>=1&&!['unmatched','ack','followup','no','yes'].includes(topic)){
           p.hinted=true;p.hintAt=n;
           lines=[...lines,...(rotate(id,p,'hint',root.STORY?.payExtras?.hints?.[id])||['你今天怎么怪怪的'])];
         }
@@ -173,6 +173,24 @@
         return result(id,p,known(id,p,fan?'fan':'admit'),'identity');
       }
       const yes=/^(?:对|是|是呀|是啊|是的|没错|嗯是的)$/.test(t),no=/^(?:嗯|对|当然|肯定|其实)?(?:我)?(?:不是|真不是|当然不是)(?:啊|呀|哦|啦|的|呢)?(?:他|本人)?$|^(?:不对|没有|对我不是|不是我)$/.test(t);
+      /* 已经问过“你不是南俊吧？”：
+       *   不是 / 不 / 我不是 / 我不是南俊 / 你怎么知道……  → 被发现了（承认不是本人）
+       *   是 / 我是 / 我是啊 / 我是南俊 / 我是金南俊……   → 对方信了，当作还是南俊 */
+      if(p.pendingIdentity&&p.identityQuestion==='notNamjoon'){
+        const admit=/^(?:嗯|对|对啊|对呀|其实)?(?:不|不是|我不是|我真不是|我真的不是|当然不是|不是我|我不是(?:金)?南(?:俊|菌)(?:哥)?|对我不是|被发现了|被你发现了|被认出来了)(?:啊|呀|啦|哦|的|呢)?$|^(?:对|对啊|对呀|没错)$/.test(t);
+        const howKnow=/怎么知道|怎么看出来|怎么发现|怎么认出|哪里看出来|咋知道|你知道了/.test(t);
+        const claim=/^(?:是|是啊|是呀|是的|我是|我是啊|我是呀|当然是|就是我|是我|我就是|我是(?:金)?南(?:俊|菌)(?:啊|呀|哥|本人)?|我就是(?:金)?南(?:俊|菌)|是我啊)$/.test(t);
+        if(admit||howKnow){
+          const lines=known(id,p,'admit');
+          if(howKnow)lines.unshift(p.petNameUsed?'他不会这么叫我ㅋㅋ':'ㅋㅋ感觉你说话跟他不太一样');
+          return result(id,p,lines,'identity');
+        }
+        if(claim){
+          // 信了：回到“以为是南俊”，起疑从现在重新算
+          p.identity='unknown';p.pendingIdentity=false;p.identityQuestion='';p.hinted=false;p.odd=0;p.claimedSelf=false;p.base=p.readerMessages||0;
+          return result(id,p,[...(member.identity.deny||['ㅋㅋ行','你接着说'])],'identity');
+        }
+      }
       if(p.pendingIdentity&&(claimSelf||yes||no)){
         // “你不是南俊吧？”——答“不是／对”= 我不是南俊；答“是”= 自称是本人。
         const claims=claimSelf||(p.identityQuestion==='isNamjoon'?yes:p.identityQuestion==='notNamjoon'?/^(?:是|是呀|是啊|是的)$/.test(t):false);
