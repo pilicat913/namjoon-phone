@@ -189,7 +189,7 @@
   function groupReply(roomId,inputs){
     const G=S.group,room=roomById(roomId);if(!G||!room)return [];
     const st=U.store.get('groupState',{used:{},scene:0,debut:0,lastLead:''});
-    const text=(window.ZH?window.ZH.toSimp(inputs.join(' ')):inputs.join(' ')).replace(/[❤♥💕💗💖💓💘💞🫶]\uFE0F?/gu,'爱'),low=text.toLowerCase(),members=room.members.filter(id=>G.lead[id]);
+    const text=(window.ZH?window.ZH.toSimp(inputs.join(' ')):inputs.join(' ')).replace(/[❤♥💕💗💖💓💘💞🫶]\uFE0F?/gu,'爱').replace(/[😭😢🥲🥺]/gu,'哭'),low=text.toLowerCase(),members=room.members.filter(id=>G.lead[id]);
     const aliases=(S.nameReplies&&S.nameReplies.aliases)||{};
     const named=(str)=>members.find(id=>(aliases[id]||[SHORT[id]]).some(a=>a.length>=2&&str.toLowerCase().startsWith(a.toLowerCase())));
     let lead=null;const at=text.match(/@\s*([^\s@]+)/);

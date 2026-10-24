@@ -13,6 +13,7 @@ vm.runInNewContext(readFileSync('dist/data/player-extras-2.js','utf8'),{window})
 vm.runInNewContext(readFileSync('dist/data/player-extras-3.js','utf8'),{window});
 vm.runInNewContext(readFileSync('dist/data/player-extras-4.js','utf8'),{window});
 vm.runInNewContext(readFileSync('dist/data/player-extras-5.js','utf8'),{window});
+vm.runInNewContext(readFileSync('dist/data/player-extras-6.js','utf8'),{window});
 {const c={};c.globalThis=c;vm.createContext(c);vm.runInContext(readFileSync('dist/vendor/opencc/t2cn.js','utf8'),c);const cv=c.OpenCC.Converter({from:'twp',to:'cn'});window.ZH={toSimp:s=>cv(String(s))};}
 vm.runInNewContext(readFileSync('dist/js/interaction-engine.js','utf8'),{window});
 let db={};const storage={get:(k,d)=>JSON.parse(JSON.stringify(db[k]??d)),set:(k,v)=>db[k]=JSON.parse(JSON.stringify(v))};

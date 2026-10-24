@@ -172,7 +172,7 @@
       const deniedFan=/(?:不是|不算|并非)(?:你们的|你的|个)?(?:粉丝|army|阿米)/.test(t);
       const fan=!deniedFan && /(?:我是|我也是|其实我是|作为)(?:你们的|你的|个|一名|南俊的|防弹的|bts的)?(?:粉丝|army|阿米)|^你们的粉丝$|^(?:阿米|army|你的粉丝|你们的粉丝)$/.test(t);
       const notSelf=/(?:我(?:其实|真的|确实|并)?不是(?:金)?(?:南(?:俊|菌)|rm|namjoon)|^不是(?:金)?南俊|不是南俊的|我不是(?:他|本人)|我不是南俊哥)|^(?:被(?:你)?发现了|被(?:你)?认出来了|露馅了|你发现了|你认出来了|不是他|不是本人)(?:啊|呀|ㅋ+|哈+)?$/.test(t);
-      const foundPhone=/(?:捡到|捡了|拿到)(?:了)?(?:这部|这个|他的|南俊的|一部)?手机|手机不是我的|(?:这是|是)(?:他|南俊|金南俊)的手机|手机还给|还给南俊/.test(t) && !/(?:没|没有|不是我)(?:捡到|拿到)/.test(t);
+      const foundPhone=/(?:捡到|捡了|拿到)(?:了)?(?:这部|这个|他的|南俊的|一部)?手机|手机不是我的|(?:这是|是)(?:他|南俊|金南俊)的手机|手机还给|还给南俊|转交|手机交给|把(?:这只|这支|这个|这部)?手机(?:交|还)给/.test(t) && !/(?:没|没有|不是我)(?:捡到|拿到)/.test(t);
       const asksNamjoon=/认识(?:金)?南俊|南(?:俊|菌)(?:哥)?(?:在哪|呢|去哪|回来了吗|什么时候回来|现在在哪)|(?:有|你)?(?:看到|见到)他(?:了)?吗|他(?:去)?(?:在)?哪(?:里|儿)?了?吗?$/.test(t);
       // 成员已经起疑（说过“你今天怎么怪怪的”）时，单说一句“我不是”也算承认
       const bareDeny=(p.hinted||p.identity==='suspect')&&/^(?:嗯|对|其实)?我(?:真的|确实)?不是(?:啊|呀|啦|哦)?$/.test(t);
@@ -230,19 +230,19 @@
         if(p.name)return result(id,p,fillName(rotate(id,p,'recall',RX().recallName?.[id])||[p.name],p.name),'recall');
         p.pendingName=true;return result(id,p,rotate(id,p,'recallNo',RX().recallNoName?.[id])||['你还没说呢'],'name');
       }
-      const nameMatch=!/^我叫你/.test(String(raw).trim()) && String(raw).trim().match(/^(?:我叫|你可以叫我|叫我|我是)([\p{L}\p{N}_\-]{1,12})(?:就行|吧|呀|啊)?[。！!～~]?$/u);
+      const nameMatch=!/^我叫你/.test(String(raw).trim()) && String(raw).trim().match(/^(?:我叫|你可以叫我|你叫我|叫我|我是)([\p{L}\p{N}_\-]{1,12}?)(?:就行|就好|就可以|吧|呀|啊)?[。！!～~]?$/u);
       const plainName=/^[\p{L}\p{N}_\-]{2,6}$/u.test(String(raw).trim()) && !getTopic(raw,p,context) && !/^(?:我|你|他|她|怎么|什么|为啥|以后|未来)|电话|视频|明天|出道/.test(t);
       const iAmName=nameMatch&&/^我是/.test(String(raw).trim())&&!/^[阿啊呀哦嗯]$|南俊|南菌|粉丝|阿米|army|认真|开玩笑|故意|说|谁|你|他|她|真|来|想|要|在|不|觉得|怕|担心|学生|人|的$|了$|啊$|吗$|呢$|吧$|哥|弟|妹|姐|朋友|同学|练习生|成员|队长|老幺/i.test(nameMatch[1])&&nameMatch[1].length<=6;
-      if(p.identity!=='known' && nameMatch && (/^(?:我叫|叫我|你可以叫我)/.test(String(raw).trim())||iAmName)) {
-        const name=nameMatch[1].replace(/(?:就行|吧|呀|啊)$/,'');
+      if(p.identity!=='known' && nameMatch && (/^(?:我叫|叫我|你叫我|你可以叫我)/.test(String(raw).trim())||iAmName)) {
+        const name=nameMatch[1].replace(/(?:就行|就好|吧|呀|啊)$/,'');
         if(!/南俊|南菌|什么|^啥$/.test(name)){
           p.identity='known';p.pendingIdentity=false;p.name=name;p.pendingName=false;
           const first=(rotate(id,p,'admit',RX().admit?.[id])||[]).filter(x=>!asksName(x));
           return result(id,p,[...first.slice(0,2),...fillName(rotate(id,p,'greet',RX().greet?.[id])||['好 {name}'],name)],'name');
         }
       }
-      if(p.identity==='known' && (p.pendingName || /^(?:我叫|叫我|你可以叫我)/.test(String(raw).trim())) && (nameMatch || plainName)) {
-        const name=(nameMatch?nameMatch[1]:String(raw).trim()).replace(/(?:就行|吧|呀|啊)$/,'');
+      if(p.identity==='known' && (p.pendingName || /^(?:我叫|叫我|你叫我|你可以叫我)/.test(String(raw).trim())) && (nameMatch || plainName)) {
+        const name=(nameMatch?nameMatch[1]:String(raw).trim()).replace(/(?:就行|就好|吧|呀|啊)$/,'');
         if(!/叫你|在吗|干嘛|你好|你猜|猜|哈哈|ㅋㅋ|不知道|不告诉|不接|不是|南俊|什么|^啥$|^好$|^嗯$|^[阿啊呀哦嗯]$|加油|晚安|喜欢|爱你/.test(name)) {
           p.name=name;p.pendingName=false;
           return result(id,p,fillName(rotate(id,p,'greet',RX().greet?.[id])||['好 {name}','我记住了'],name),'name');

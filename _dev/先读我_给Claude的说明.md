@@ -185,3 +185,8 @@ node tests/viewport.cjs
 
 - 新文件 `data/player-extras-5.js`：私聊新增 notAgain（已识破后再说“我不是南俊”→“知道啦 你说过了”）、howUsually（“那我平时怎么叫你”）、kiss、letGo、comeHere、frustrated（“你好难沟通”→成员道歉请对方再说一遍）、whyHappy、wantGift、favor、friend、stillUp、morning、earlySleep，放宽若干旧话题。群聊新增 foundPhone（在群里说捡到手机 / 找失主：大家照旧以为是南俊，但会接这个话，如“南俊你手机丢了？？”）、quiet、kissG、pet、game，扩充 happy / together / food / yogurt / plan / ignored / wakeG / bye / greet / me。
 - 引擎：名字里带“猜”或单字“阿 / 啊”不当名字；“猜猜看”算猜我是谁；“在哪儿”“为什么奇怪”能认。群聊判断话题前先去掉 @某人。柾国别名加 国儿 / 小国 / 柾guo / 小果。
+
+## 2026-10-25 第十四轮：语库第六批（玩家数据截至 2026-10-24 15:32:42 UTC）
+
+- 新文件 `data/player-extras-6.js`：私聊新增 fanFuture（“我是13年后的粉丝 / 你们会在体育场开演唱会”等，回复认真不玩笑）、fanName（粉丝名还没定）、loveQ、shipQ、harsh（骂人时成员委屈地问“我做错什么了吗”）、handover（约时间地点归还手机）、bath、apologize、address、lottery、scared、firstMeet、whatDiff、errand、believe、grownUp、wish，扩充若干旧话题。群聊新增 shutUp、comeG、date、age、borrow、light、spam、hardLead，扩充 happy / together / crush / food / wakeG / photoGo / foundPhone / bye / today / cry / sleep / game。
+- 引擎：“你叫我X就好”也算报名字；说要把手机交给 / 转交 也算承认不是本人。群聊里 😭 当“哭”。
