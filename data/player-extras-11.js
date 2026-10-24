@@ -30,6 +30,21 @@
     yq: [['ㅋ']], sx: [['ㅋㅋㅋㅋ']], hx: [['ㅋㅋㅋㅋㅋㅋ']], jw: [['ㅋㅋ好可爱']], ty: [['ㅋㅋㅋㅋ同意']], jy: [['ㅋㅋ']]
   };
   for (const id of Object.keys(piggy)) if (G.lead[id]) Object.assign(G.lead[id], { piggyLeave: piggy[id], piggy: piggyAny[id], piggyMe: piggyMe[id], piggyOthers: piggyOthers[id] });
+  // 群里问粉丝叫什么 / 告诉他们叫阿米
+  G.topics.unshift(
+    { key: 'fanNameG', re: '粉丝(?:名)?(?:要)?叫什么|粉丝名|粉丝怎么叫', prefer: ['sx', 'hx', 'jw'] },
+    { key: 'armyG', re: '粉丝(?:就)?叫(?:阿米|army)|叫(?:阿米|army)|阿米是|army是', prefer: ['hx', 'ty', 'jw'] }
+  );
+  const fanLines = {
+    yq: { fanNameG: [['……还没定']], armyG: [['……army', '还行'], ['……记住了']] },
+    sx: { fanNameG: [['还没定呢', '你觉得叫什么好？'], ['南俊你有想法吗ㅋㅋ']], armyG: [['阿米？', '好听！哥记住了ㅋㅋ'], ['阿米ㅋㅋ', '就这个吧']] },
+    hx: { fanNameG: [['还没想好！！', '要好听的'], ['大家一起想！！']], armyG: [['阿米！！', '好好听！！'], ['阿米阿米！！ㅋㅋ', '我已经喜欢上了']] },
+    jw: { fanNameG: [['还没定呢…'], ['想要个好听的ㅋㅋ']], armyG: [['阿米…', '好好听'], ['ㅋㅋ阿米', '好可爱']] },
+    ty: { fanNameG: [['还没定！', '我想叫他们宝贝ㅋㅋ']], armyG: [['阿米！', '我喜欢ㅋㅋ'], ['那以后我们就是防弹和阿米了']] },
+    jy: { fanNameG: [['……还没定']], armyG: [['……阿米', '好听'], ['……记住了ㅋㅋ']] }
+  };
+  for (const [id, more] of Object.entries(fanLines)) if (G.lead[id]) Object.assign(G.lead[id], more);
+  G.topics.unshift({ key: 'together', re: '会有粉丝|会有人喜欢|有粉丝吗|会不会有粉丝', prefer: ['hx', 'jw', 'sx'] });
   G.topics.unshift({ key: 'piggyLeave', re: '先(?:离开|走|睡|下线)的?(?:人)?是(?:小)?猪|谁先.{0,4}谁是(?:小)?猪', prefer: ['sx', 'hx', 'ty'] });
   const hg = G.topics.find((t) => t.key === 'harshG'); if (hg) hg.re = '废物|鸡歪|垃圾|种猪|滚出来|出来道歉|别打扰|傻逼|滚|去死|畜生|畜牲|白痴';
 })();

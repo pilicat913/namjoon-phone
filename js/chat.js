@@ -209,7 +209,12 @@
     // 群里骂人：第一次有人回，第二次大家不接话，第三次起没人理
     if(key==='harshG'){st.harsh=(st.harsh||0)+1;if(st.harsh>=2){U.store.set('groupState',st);return st.harsh===2?[['sx','……南俊 先睡吧'],['yq','……']]:[];}}
     const rounds=G.lead[lead][key],n=st.used[lead+':'+key]||0;st.used[lead+':'+key]=n+1;
-    const seq=rounds[n%rounds.length].map(line=>[lead,line]);
+    // 同一个人这次要说的和他上次在群里说的一模一样：换成通用反应，不复读
+    st.last=st.last||{};
+    let leadLines=rounds[n%rounds.length];
+    if(leadLines.join('|')===st.last[lead]&&G.follow&&G.follow[lead]){const fn=st.used[lead+':follow']||0;st.used[lead+':follow']=fn+1;leadLines=G.follow[lead][fn%G.follow[lead].length];}
+    st.last[lead]=leadLines.join('|');
+    const seq=leadLines.map(line=>[lead,line]);
     st.lastLead=lead;
     // 不只一个人理：再有一两个人接着回读者这句（同话题用自己的台词，没有就用通用反应），之后才可能岔开闲聊
     // 没接住（没有话题）时只让一个人回，不再有人跟着附和、也不岔开闲聊，免得像“已读乱回”
@@ -224,7 +229,10 @@
         const pool=fk?G.lead[f][fk]:(G.follow&&G.follow[f]);
         if(!pool||!pool.length)return;
         const uk=f+':'+(fk||'follow'),m=st.used[uk]||0;st.used[uk]=m+1;
-        pool[m%pool.length].forEach((line,j)=>seq.push([f,line,j?0:(i?500:700)]));
+        const fl=pool[m%pool.length];
+        if(fl.join('|')===st.last[f])return; // 跟自己上次说的一样就这次不出声
+        st.last[f]=fl.join('|');
+        fl.forEach((line,j)=>seq.push([f,line,j?0:(i?500:700)]));
       });
     }
     const debut=!!U.store.get('jumped',false),list=debut?G.debutScenes:G.scenes,k=debut?'debut':'scene';

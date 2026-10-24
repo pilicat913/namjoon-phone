@@ -228,3 +228,4 @@ node tests/viewport.cjs
 - 群聊：骂人（`harshG`）第一次有人回，第二次硕珍说“……南俊 先睡吧”，第三次起没人接（`groupState.harsh`）。
 - “先离开的人是小猪”：大家抢着说自己不走，不再点名谁（`data/player-extras-11.js`）。
 - 补充：“小猪”拆成三种——`piggyLeave`（谁先走谁是小猪：大家说自己不走）、点名某人是小猪（被点名的人用 `piggyMe` 自己反驳，其他人用 `piggyOthers` 起哄）、只说小猪（`piggy`：谁是小猪）。chat.js 通用规则：话里点名了某人、且该话题有 `<key>Me` 版本时，被点名的人用 Me 版，跟着回的人用 `<key>Others`（没有就用原话题）。
+- 群聊再补：问“粉丝叫什么”（`fanNameG`：还没定）、说“粉丝叫阿米”（`armyG`：好听、记住了）、“我们会有粉丝吗”（归到 together 安慰）。chat.js：同一个成员这次的回复和他上次在群里说的一字不差时，带头的人换成通用反应，跟着回的人这次不出声（`groupState.last`）。
