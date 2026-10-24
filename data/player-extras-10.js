@@ -80,6 +80,7 @@
   extend('sleepTogether', '去哥房间睡|去你房间睡|跟哥睡');
   extend('stress', '睡不好|放松不了|焦虑');
   extend('robot', '像ai|诡异');
+  extend('animal', '宝猪');
   extend('sendMe', '跳舞影片|跳舞视频|视频给我');
   extend('wakeMe', '分叫我|二十分');
   extend('mistake', '跳不好|会做好吗');
@@ -105,6 +106,24 @@
   extendG('fanG', '毒唯');
   extendG('tsundere', '装傻');
   extendG('harshG', '种猪|滚出来|出来道歉|别打扰');
+  // 补漏：文件没了、小猪、奶龙、闵运气；“不能出门”“真难带”优先归到对的话题
+  G.topics.unshift(
+    { key: 'fileLost', re: '(?:文件|文档|存档)(?:没了|不见|丢了)', prefer: ['yq', 'jw', 'sx'] },
+    { key: 'piggy', re: '小猪|宝猪|猪', prefer: ['jy', 'ty', 'sx'] },
+    { key: 'nailong', re: '奶龙', prefer: ['ty', 'hx', 'jy'] },
+    { key: 'yqNick', re: '闵运气|运气', prefer: ['yq', 'sx', 'hx'] },
+    { key: 'forbid', re: '不能出门|不准出门|不许出门', prefer: ['jy', 'ty', 'sx'] },
+    { key: 'hardLead', re: '难带|带不动', prefer: ['sx', 'hx', 'jw'] }
+  );
+  const more10 = {
+    yq: { fileLost: [['……？？？', '……什么文件', '……我去看看']], piggy: [['……ㅋ']], nailong: [['……什么东西']], yqNick: [['……谁是闵运气'], ['……再叫一次试试']] },
+    sx: { fileLost: [['玧其！！', '快看看还在不在']], piggy: [['柾国是小猪ㅋㅋ']], nailong: [['奶龙是什么ㅋㅋ']], yqNick: [['ㅋㅋㅋㅋ闵运气']] },
+    hx: { fileLost: [['啊啊啊！！', '玧其哥快看！！']], piggy: [['ㅋㅋㅋㅋ小猪！！']], nailong: [['奶龙！！ㅋㅋㅋㅋ', '是什么呀']], yqNick: [['ㅋㅋㅋㅋ运气好的玧其哥']] },
+    jw: { fileLost: [['……哥别吓他ㅋㅋ']], piggy: [['ㅋㅋ谁是小猪']], nailong: [['……奶龙？ㅋㅋ']], yqNick: [['ㅋㅋㅋㅋ']] },
+    ty: { fileLost: [['……玧其哥会哭的']], piggy: [['柾国！ㅋㅋ']], nailong: [['我是奶龙！ㅋㅋ']], yqNick: [['闵运气！ㅋㅋ', '好好听']] },
+    jy: { fileLost: [['……？']], piggy: [['……不是我ㅋㅋ'], ['……我才不是猪']], nailong: [['……？ㅋㅋ']], yqNick: [['ㅋㅋ']] }
+  };
+  for (const [id, more] of Object.entries(more10)) if (G.lead[id]) Object.assign(G.lead[id], more);
   const lines = {
     yq: { deflect: [['……南俊 睡觉']], studentLife: [['……辛苦了', '早点睡']], outNight: [['……去哪', '明天六点']], chant: [['……什么口号']], sign: [['……还没练']], dm: [['……嗯']] },
     sx: { deflect: [['……南俊你在说什么ㅋㅋ', '快去睡']], studentLife: [['辛苦了', '累了就先休息', '哥在']], outNight: [['？？去哪', '明天六点要起啊']], chant: [['口号？', '我们还没有呢ㅋㅋ']], sign: [['哥的签名最帅ㅋㅋ']], dm: [['好 等我']] },
