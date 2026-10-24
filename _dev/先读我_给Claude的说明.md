@@ -162,3 +162,9 @@ node tests/viewport.cjs
   - `nameSpam`：连着叫同一个人的名字，第三次起换着回；叫名字不再触发“你不是南俊吧？”。
   - 群聊新话题：ignored、love、plan、buy、ok、funny、me，以及只 @ 某人时的 `called`。
 - 引擎另改：“我是小猫”这类也算报名字（排除 我是认真的 / 粉丝 / 学生 等）；“被你发现了”算承认；短句 ack 补了 可以 / 好吧好吧 / 行行行 / 我看看。
+
+## 2026-10-24 第十轮：语库第二批（玩家数据截至 13:54:27 UTC）
+
+- 新文件 `data/player-extras-2.js`（在 player-extras.js 之后载入）：私聊新增 phoneBack、youWeird、denyOdd、excited、dorm、waitYou、goodJob、wakeUp、youToo、give、mistake、eatOut、offerFood、hungry、charge、whenBack、likeIt、family、youKnow、awkward、pleaseLook、sappy、comfort、noThanks、meToo、thin、go、lookingFor、noteFix、tiredQ、crush；放宽 love / goSleep / askIsMember / proud 的匹配。群聊新增 sleepNag、happy、cry、praise、together、greet、what、yogurt、bug、peace、news、photoGo、crush、interj。
+- 引擎：短句 ack 认 喔 / 內 / 네 / ok / 前面带ㅋ；“睡觉了吗”“舞台”“好好练”“陪哥聊天”能认；“这是南俊的手机吗 / 手机还给南俊”算承认不是本人；号锡别名加“厚比兄”。
+- 以后的流程：作者发来新导出的消息，只针对接不住的话补各人回复，不整批重跑；补完推到 GitHub，再给一句从这批最后一条之后开始查的 SQL。
