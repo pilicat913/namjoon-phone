@@ -144,3 +144,9 @@ node tests/viewport.cjs
 
 - 进度存在 sessionStorage（同一个浏览器标签页里刷新也不会清空）。设置第二组加了“重新开始”，确认后调用 `U.store.reset()`：删掉 `nj-phone-story-v10` 这一项、之后的写入全部忽略，然后刷新页面，回到 6 月 12 日锁屏。存储键名没有改。
 - 礼物列表修正：`.ks-body` 里的内容不再被压扁，矮屏幕上可以滑到最后一个。
+
+## 2026-10-24 第八轮（在别处完成，已合并）
+
+- 锁屏密码第一位要按两次：`js/app.js` 数字键改为 `pointerdown` 立刻记录，随后的普通 `click` 忽略；`detail === 0` 的键盘 / 辅助功能点击仍然有效。已在模拟 iPhone 上验证点一次即记一位。
+- 自愿分享语库（默认关闭）：`js/feedback.js`，在 `chat.js` 前加载。聊天输入框上方有“语库分享：关/开”和“本条不分享”。同意状态单独存在 sessionStorage 的 `namjoon-feedback-consent-v1`（“重新开始”不会清掉它）。只上传开启后新发的文字 + 角色名 + 游戏生成的回复；不补传历史。
+- 后端：Cloudflare Worker `https://namjoon-feedback.1228088256.workers.dev/`，D1 数据库 `namjoon-feedback`（绑定名 `DB`），源码与建表 SQL 在 `feedback/`（仓库里是 `_dev/feedback/`）。允许来源 `https://pilicat913.github.io`。没有公开读取接口，在 D1 Console 用 `SELECT * FROM feedback ORDER BY created_at DESC LIMIT 100;` 查看。
