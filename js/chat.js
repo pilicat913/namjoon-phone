@@ -361,6 +361,7 @@
     function openRoom(id, instant, options = {}) {
       const room = roomById(id);
       if (!room) return;
+      if (room.id === S.group?.roomId) window.Feedback?.inviteOnce();
       if (!instant) U.sound.tap();
       const firstUnread = room.msgs.find(isUnread);
       const page = h('div', { class: 'page k-room' + (instant ? '' : ' push-in'), 'data-room': id });
