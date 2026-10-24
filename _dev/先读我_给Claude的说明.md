@@ -205,3 +205,8 @@ node tests/viewport.cjs
 - 玩家反馈群聊“已读乱回”。原因是没接住的话也有第二、三个人用通用附和（“南俊说得对ㅋㅋ”）接，再岔开闲聊。现在：没有话题（key 为 any）时只有一个人回，不跟附和、不岔开；`group.follow` 也改成不带“同意”语气。
 - 新文件 `data/player-extras-7.js`：私聊新增 money、wantToTalk、whereQ、tellWhenDone、aboutNamjoon、cookReq（找硕珍做饭）、animal、expressLove、noona、bday、gameConsole、stress，放宽大量旧话题；群聊新增 meta（玩家说“乱回”时道歉）、bts、quit、goOut、english、wow、harshG、tsundere、familyG、interview、whenBackG、fanG。引擎 food 认“吃晚餐 / 早饭 / 吃啥”。
 - 数据导出：以后用“只看没接住的话”的 SQL（按兜底回复筛、按句子去重计数），见 `feedback/查看新消息.sql`。
+
+## 2026-10-25 第十七轮：导出改成下载文件；语库第八批
+
+- 后端 `feedback/worker.js` 新增 `/export?key=密码`：下载 CSV，默认只含“上次下载以后、没接住的话”（按句子去重计数），下载后自动记录截到哪里（表 `export_state`，按 rowid）。参数：`&again=1` 重下上一批，`&all=1` 全部消息，`&since=UTC时间` / `&from=rowid` 指定起点。需要 Worker Secret `EXPORT_KEY`。作者已部署并下载成功。
+- 新文件 `data/player-extras-8.js`：nameArmy（玩家给粉丝起名叫 army 时成员记住）、knowArmy、futureWarn（解散 / 肩膀受伤等未来剧透：担心但不点破）、songLiked、stageName，放宽若干；群聊新增 gross、sleepTogetherG。
