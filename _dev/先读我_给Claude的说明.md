@@ -221,3 +221,9 @@ node tests/viewport.cjs
 - 新文件 `data/player-extras-10.js`。原则：告白（“我是你对象”“149的女生”“marry me”）温柔带过、不升级暧昧；有人说“我喜欢的是男生 / 怕被粉丝知道”时成员接纳、不开玩笑（comingOut）；抽烟一律拒绝；群里擦边话（多P、蕾丝）岔开（deflect）；学生说课业好累、焦虑时认真安慰（studentLife / worryG）。
 - 另有 tattoo、toFans、callMeBaby、autograph、meetDate（如“11/22见”）、walk、myBday、whyIdol（柾国：看了南俊哥的rap就想来）、joke（硕珍的冷笑话）、farewell（“明天还能见面吗”）、momGift、pain 等；群聊 studentLife、outNight、chant、sign、dm，放宽若干。
 - 引擎：名字后面可以带多个感叹号 / ㅋ（“我叫jae!!”）；玧其别名加“闵运气”。
+
+## 2026-10-25 第二十轮：骂人的底线；小猪不点名
+
+- 私聊：真骂人（`harsh`：畜生、滚、去死、傻逼、废物……）第一次委屈地问“我做错什么了吗”，第二次说“你今天心情不好的话 我先不打扰了”（`harshBoundary`），第三次起不再回复、消息一直挂“1”（计数 `harshCount`，每人分开）。“笨蛋 / 小傻子”这类亲昵的仍归 `insult`，照常回。
+- 群聊：骂人（`harshG`）第一次有人回，第二次硕珍说“……南俊 先睡吧”，第三次起没人接（`groupState.harsh`）。
+- “先离开的人是小猪”：大家抢着说自己不走，不再点名谁（`data/player-extras-11.js`）。

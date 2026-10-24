@@ -203,6 +203,8 @@
     const nameOnly=!at&&lead&&(aliases[lead]||[]).some(a=>a.toLowerCase()===bare);
     const onlyAt=(at&&!text.replace(/@\s*[^\s@]+/g,'').trim())||nameOnly;
     const key=onlyAt&&G.lead[lead].called?'called':topic&&G.lead[lead][topic.key]?topic.key:'any';
+    // 群里骂人：第一次有人回，第二次大家不接话，第三次起没人理
+    if(key==='harshG'){st.harsh=(st.harsh||0)+1;if(st.harsh>=2){U.store.set('groupState',st);return st.harsh===2?[['sx','……南俊 先睡吧'],['yq','……']]:[];}}
     const rounds=G.lead[lead][key],n=st.used[lead+':'+key]||0;st.used[lead+':'+key]=n+1;
     const seq=rounds[n%rounds.length].map(line=>[lead,line]);
     st.lastLead=lead;

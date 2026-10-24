@@ -286,6 +286,12 @@
         const repeated=!!p.petNameUsed;p.petNameUsed=true;
         return result(id,p,repeated?['ㅋㅋ还叫']:extra(id,'petName'),'petName');
       }
+      // 真的在骂人（不是“笨蛋”这种亲昵的）：第一次委屈，第二次划清界限，第三次起不再回（消息一直挂着“1”）
+      if(topic==='harsh'){
+        const k=(p.harshCount||0)+1;p.harshCount=k;
+        if(k===2){const b=root.STORY?.harshBoundary?.[id];if(b)return result(id,p,[...b].map(x=>x.replaceAll('{哥}',p.identity!=='known'&&/^(?:jw|ty|jy)$/.test(id)?'哥':'')),'harsh');}
+        if(k>=3){save(id,p);return {messages:[],identity:p.identity,topic:'harsh',name:p.name};}
+      }
       const more=root.STORY?.moreTopics?.[topic];
       if(more&&more.lines?.[id]){
         const mode=p.identity==='known'?'after':'before';
