@@ -13,6 +13,7 @@ export default {
     }
     const reply = (status, value) => new Response(JSON.stringify(value), { status, headers });
     if (url.pathname === '/health' && request.method === 'GET') return reply(200, { service: 'namjoon-feedback', configured: !!env.DB });
+    if (url.pathname === '/export' && request.method === 'GET') return exportFile(url, env);
     if (url.pathname !== '/messages') return reply(404, { error: 'not_found' });
     if (!ORIGINS.has(origin)) return reply(403, { error: 'origin_denied' });
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...headers, 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' } });
@@ -49,3 +50,49 @@ export default {
     } catch { return reply(503, { error: 'storage_unavailable' }); }
   }
 };
+
+/* 作者下载玩家消息用：/export?key=密码
+ *   默认：只下载“上次下载以后”、成员没接住的话（按句子去重、带次数），下载后自动记下这次截到哪里。
+ *   &all=1        下载全部消息（不只是没接住的），不去重
+ *   &again=1      重新下载上一批（不前进），万一上次的文件丢了用
+ *   &since=2026-10-24T16:26:00   从这个时间（UTC）之后开始（第一次用）
+ *   &from=0       从头开始（rowid 从这个数之后）
+ * 需要在 Cloudflare 里给这个 Worker 加一个 Secret：EXPORT_KEY = 你自己定的密码。 */
+const FALLBACK = ['%没明白%', '%没看懂%', '%没跟上%', '%理解错%', '%再说一遍%', '%换个说法%', '%什么意思%', '%没懂%', '%说重点%',
+  '%在说什么%', '%说什么呀%', '%你说啥%', '？%', '……什么%', '啥？%', '哥？%', '啊？%', '嗯？%'];
+async function exportFile(url, env) {
+  const text = (status, body) => new Response(body, { status, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } });
+  if (!env.DB) return text(503, '数据库没有绑定');
+  if (!env.EXPORT_KEY || url.searchParams.get('key') !== env.EXPORT_KEY) return text(403, '密码不对');
+  await env.DB.prepare('CREATE TABLE IF NOT EXISTS export_state (id INTEGER PRIMARY KEY CHECK (id = 1), prev INTEGER NOT NULL DEFAULT 0, last INTEGER NOT NULL DEFAULT 0)').run();
+  await env.DB.prepare('INSERT OR IGNORE INTO export_state (id, prev, last) VALUES (1, 0, 0)').run();
+  const state = await env.DB.prepare('SELECT prev, last FROM export_state WHERE id = 1').first();
+  const top = (await env.DB.prepare('SELECT IFNULL(MAX(rowid), 0) AS m FROM feedback').first()).m;
+  let from, to;
+  if (url.searchParams.get('again') === '1') { from = state.prev; to = state.last; }
+  else {
+    const since = url.searchParams.get('since');
+    if (since) from = (await env.DB.prepare('SELECT IFNULL(MAX(rowid), 0) AS m FROM feedback WHERE created_at <= ?').bind(since.replace('T', ' ')).first()).m;
+    else from = url.searchParams.has('from') ? Number(url.searchParams.get('from')) || 0 : state.last;
+    to = top;
+    await env.DB.prepare('UPDATE export_state SET prev = ?, last = ? WHERE id = 1').bind(from, to).run();
+  }
+  const all = url.searchParams.get('all') === '1';
+  const range = await env.DB.prepare('SELECT MIN(created_at) AS a, MAX(created_at) AS b, COUNT(*) AS n FROM feedback WHERE rowid > ? AND rowid <= ?').bind(from, to).first();
+  let rows, head;
+  if (all) {
+    rows = (await env.DB.prepare("SELECT created_at, character, message, reply FROM feedback WHERE rowid > ? AND rowid <= ? AND character NOT IN ('妈妈','经纪人哥','方PD') ORDER BY rowid").bind(from, to).all()).results;
+    head = ['时间', '角色', '玩家消息', '回复'];
+    rows = rows.map((r) => [r.created_at, r.character, r.message, r.reply]);
+  } else {
+    const like = FALLBACK.map(() => 'reply LIKE ?').join(' OR ');
+    rows = (await env.DB.prepare(`SELECT character, message, COUNT(*) AS n FROM feedback WHERE rowid > ? AND rowid <= ? AND character NOT IN ('妈妈','经纪人哥','方PD') AND (${like}) GROUP BY character, message ORDER BY n DESC`).bind(from, to, ...FALLBACK).all()).results;
+    head = ['角色', '玩家消息', '次数'];
+    rows = rows.map((r) => [r.character, r.message, r.n]);
+  }
+  const esc = (v) => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const csv = '﻿' + [`# 时间范围（UTC）：${range.a || '-'} ～ ${range.b || '-'}，共 ${range.n} 条消息；${all ? '全部' : '只含没接住的话'}`, head.join(','), ...rows.map((r) => r.map(esc).join(','))].join('\r\n');
+  const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+  return new Response(csv, { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="namjoon-feedback-${stamp}.csv"`, 'Cache-Control': 'no-store' } });
+}
+
