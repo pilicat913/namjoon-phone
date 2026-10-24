@@ -197,10 +197,21 @@
     code = '';
     pcDots = h('div', { class: 'pc-dots' }, h('i'), h('i'), h('i'), h('i'));
     const keys = [['1', ''], ['2', 'ABC'], ['3', 'DEF'], ['4', 'GHI'], ['5', 'JKL'], ['6', 'MNO'], ['7', 'PQRS'], ['8', 'TUV'], ['9', 'WXYZ']];
+    // Record pointer presses directly; keep keyboard/assistive clicks.
+    function digitEvents(d) {
+      return {
+        onpointerdown: (e) => {
+          if (e.isPrimary === false || (e.button != null && e.button !== 0)) return;
+          e.preventDefault();
+          press(d);
+        },
+        onclick: (e) => { if (e.detail === 0) press(d); }
+      };
+    }
     const pad = h('div', { class: 'pc-pad' }, keys.map(([d, l]) =>
-      h('button', { class: 'pc-key', 'data-d': d, 'aria-label': d, onclick: () => press(d) }, h('b', null, d), l ? h('small', null, l) : null)),
+      h('button', { class: 'pc-key', 'data-d': d, 'aria-label': d, ...digitEvents(d) }, h('b', null, d), l ? h('small', null, l) : null)),
       h('button', { class: 'pc-key fn', onclick: () => cancel() }, '取消'),
-      h('button', { class: 'pc-key', 'data-d': '0', 'aria-label': '0', onclick: () => press('0') }, h('b', null, '0')),
+      h('button', { class: 'pc-key', 'data-d': '0', 'aria-label': '0', ...digitEvents('0') }, h('b', null, '0')),
       h('button', { class: 'pc-key fn', 'aria-label': '删除', onclick: () => erase(), html: '<svg viewBox="0 0 30 20"><path d="M9 2h18a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H9L1 10z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 6l8 8M22 6l-8 8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>' }));
     const layer = h('div', { class: 'layer passcode' }, wallpaper('lock'),
       h('div', { class: 'pc-inner' }, h('div', { class: 'pc-head' }, h('div', { class: 'pc-title' }, '输入密码'), pcDots, h('div', { class: 'pc-hint' }, '提示：出道日')), pad));
