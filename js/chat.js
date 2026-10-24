@@ -160,7 +160,7 @@
         delete readerBursts[roomId];
         if(b.group){const seq=groupReply(roomId,b.inputs);window.Feedback?.flush(roomId,roomTitle(roomById(roomId)),seq.map(x=>x[1]));enqueueSeq(roomId,seq);return;}
         const totalMessages=interactiveLog.filter(m=>m.roomId===roomId&&m.from==='me'&&typeof m.content==='string').length;
-        const reply=interaction.respondBatch(b.from,b.inputs,{totalMessages,photo:U.store.get('viewedPhotos',{})[roomId]||null});
+        const reply=interaction.respondBatch(b.from,b.inputs,{totalMessages,photo:U.store.get('viewedPhotos',{})[roomId]||null,debut:!!U.store.get('jumped',false)});
         window.Feedback?.flush(roomId,U.personName(b.from),reply.messages);
         enqueueReply(roomId,b.from,reply.messages);
       });
@@ -196,7 +196,8 @@
     if(at)lead=named(at[1]);
     if(!lead)lead=members.find(id=>(aliases[id]||[]).some(a=>a.length>=2&&!/^[a-z]+$/i.test(a)&&text.includes(a)))||null;
     const lowNoAt=low.replace(/@\s*[^\s@]+/g,'').trim()||low;
-    const topic=G.topics.find(tp=>new RegExp(tp.re,'i').test(lowNoAt));
+    const jumpedNow=!!U.store.get('jumped',false);
+    const topic=G.topics.find(tp=>!(tp.beforeDebut&&jumpedNow)&&!(tp.afterDebut&&!jumpedNow)&&new RegExp(tp.re,'i').test(lowNoAt));
     if(!lead){const pool=(topic?topic.prefer:members).filter(id=>id!==st.lastLead&&members.includes(id));lead=pool[Math.floor(Math.random()*pool.length)]||members[0];}
     const bare=text.trim().toLowerCase().replace(/[啊呀！!~～。.]+$/,'').replace(/^(.+?)\1+$/,'$1');
     const nameOnly=!at&&lead&&(aliases[lead]||[]).some(a=>a.toLowerCase()===bare);
@@ -220,8 +221,10 @@
       });
     }
     const debut=!!U.store.get('jumped',false),list=debut?G.debutScenes:G.scenes,k=debut?'debut':'scene';
-    if(list&&list.length&&Math.random()<.35){
-      const scene=list[(st[k]||0)%list.length];st[k]=(st[k]||0)+1;
+    // 闲聊小场景：每局随机顺序，用过的不再出现，用完就不再岔开
+    const order=st[k+'Order']||(st[k+'Order']=(list||[]).map((_,i)=>i).sort(()=>Math.random()-.5));
+    if(list&&order.length&&Math.random()<.35){
+      const scene=list[order.shift()];
       scene.forEach(([from,line],i)=>seq.push([from,line,i?0:1500]));
     }
     U.store.set('groupState',st);
@@ -403,6 +406,7 @@
       const send = () => {
         const text = field.value.trim(); if (!text) return;
         field.value = ''; syncBtn();
+        setTimeout(() => { if (room.with === 'mom') momAfterDebut(); jumpHint(); }, 0);
         window.Feedback?.stage(room.id,text,feedbackBar?.take() === true);
         appendInteractive(room.id,'me',text);
         if(room.with && interaction.hasContact(room.with)) {
@@ -825,6 +829,28 @@
 
   /* 剧情事件推送的新消息 */
   let evSeq = 0;
+  /* 跳到 6 月 13 日以后：给妈妈发过文字的，妈妈回一次（只回这一次，之后照旧不回） */
+  function momAfterDebut() {
+    if (!U.store.get('jumped', false) || U.store.get('momReplied', false) || !S.momDebut) return;
+    const room = rooms.find((r) => r.with === 'mom' && !r.members); if (!room) return;
+    const sent = interactiveLog.filter((x) => x.roomId === room.id && x.from === 'me' && typeof x.content === 'string').map((x) => String(x.content));
+    if (!sent.length) return;
+    U.store.set('momReplied', true);
+    const M = S.momDebut, all = window.ZH ? window.ZH.toSimp(sent.join(' ')) : sent.join(' ');
+    let lines = [...M.base];
+    if (/想你|想妈|想家|想您/.test(all)) lines.splice(M.missAt, 0, ...M.miss);
+    if (/睡不着|紧张|睡不著/.test(all)) lines = [...lines.slice(0, -1), ...M.sleep];
+    enqueueReply(room.id, 'mom', lines, undefined, 5000);
+  }
+  /* 聊了不少还没跳转：设置推一条提示（只推一次） */
+  function jumpHint() {
+    if (U.store.get('jumped', false) || U.store.get('jumpHinted', false)) return;
+    const n = interactiveLog.filter((x) => x.from === 'me').length;
+    if (n < 25) return;
+    U.store.set('jumpHinted', true);
+    setTimeout(() => U.banner({ appId: 'settings', title: '设置', text: '跳转时间：想看看 6 月 13 日出道那晚吗？', onOpen: () => window.Phone.openApp('settings') }), 6000);
+  }
+  setTimeout(momAfterDebut, 1500);
   function pushMessage(roomId, raw, silent) {
     const room = roomById(roomId); if (!room) return;
     const m = { ...toMsg(roomId, raw, evSeq++, 'ev'), unread: true };
@@ -838,5 +864,5 @@
   }
   // 跳转时间后补进来的消息按时间排好（同一时间保持原顺序）
   function resort() { rooms.forEach((r) => r.msgs.sort((a, b) => a.p.t - b.p.t)); emit(); }
-  window.Chat = { mount, totalUnread, notifications, onChange, pushMessage, resort };
+  window.Chat = { mount, totalUnread, notifications, onChange, pushMessage, resort, momAfterDebut };
 })();

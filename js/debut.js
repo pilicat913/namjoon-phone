@@ -27,7 +27,7 @@
     const list = queue();
     let i = from;
     const step = () => {
-      if (i >= list.length) { timer = null; return; }
+      if (i >= list.length) { timer = null; window.Chat.momAfterDebut && window.Chat.momAfterDebut(); return; }
       deliver(list[i]); i++; U.store.set('jumpIdx', i);
       // 群里的消息快一点，私聊的话慢一点，像是一条条打出来的
       timer = setTimeout(step, list[i] && list[i].room === list[i - 1].room ? (list[i].room === 'dorm' ? 380 : 650) : 1100);

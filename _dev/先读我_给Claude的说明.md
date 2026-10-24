@@ -190,3 +190,12 @@ node tests/viewport.cjs
 
 - 新文件 `data/player-extras-6.js`：私聊新增 fanFuture（“我是13年后的粉丝 / 你们会在体育场开演唱会”等，回复认真不玩笑）、fanName（粉丝名还没定）、loveQ、shipQ、harsh（骂人时成员委屈地问“我做错什么了吗”）、handover（约时间地点归还手机）、bath、apologize、address、lottery、scared、firstMeet、whatDiff、errand、believe、grownUp、wish，扩充若干旧话题。群聊新增 shutUp、comeG、date、age、borrow、light、spam、hardLead，扩充 happy / together / crush / food / wakeG / photoGo / foundPhone / bye / today / cry / sleep / game。
 - 引擎：“你叫我X就好”也算报名字；说要把手机交给 / 转交 也算承认不是本人。群聊里 😭 当“哭”。
+
+## 2026-10-25 第十五轮：五项打磨（`data/polish.js` + 引擎 / chat.js / debut.js）
+
+1. 减少重复：私聊里和上一条回复一字不差时，换成 `dupLines`；群聊闲聊小场景每局随机顺序、用过不再出现、用完就不再岔开；出道前小场景 20→32 段，出道当晚 6→20 段。
+2. “你不是南俊吧？”：只有读者说了不像南俊会说的话（`ODD_TOPICS`：夸人、我爱你、叫宝宝、未来的粉丝……或看不懂的话），或在小怀疑之后又聊了 7 句以上才问；晚安、好吧、早点睡等（`CALM_TOPICS`）不会触发。问的时候先回原话的第一句，再“等等 / 你不是南俊吧？”。
+3. 识破、知道名字后再聊 9 句：成员主动说一段收尾的话（`closings`，出道前问“明天的舞台你会看吗”，跳转后问“今天的舞台你看了吗”），回答能接上。每人一次。
+4. 妈妈：跳到 6 月 13 日以后（弹完消息时 / 之后再给妈妈发消息时），只要读者给妈妈发过文字，妈妈回一次（`momDebut`，说过“想你”会多一句“妈妈也想你”，说过睡不着 / 紧张会换成“睡不着就躺着…妈妈在呢”）。之后照旧不回。存储键 `momReplied`。
+5. 出道前说“出道快乐”：私聊回“明天才是呢”这类，跳转后改成真的庆祝（moreTopics 可带 `debutLines`）；群聊话题 `notYet` 只在跳转前生效（话题可带 `beforeDebut` / `afterDebut`）。读者一共发了 25 条还没跳转时，设置推一次横幅“跳转时间：想看看 6 月 13 日出道那晚吗？”（`jumpHinted`）。
+- 引擎的 respond 现在会收到 `context.debut`（chat.js 传入是否已跳转）。

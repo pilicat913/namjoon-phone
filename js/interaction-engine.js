@@ -16,6 +16,9 @@
   const NO = /^(?:不|没|还没|别|no|才不)/;
   // 每人第几句开始起疑（读者说了不像南俊的话会提前）
   const SUSPECT_AT = { yq: 6, sx: 7, hx: 6, jw: 7, ty: 6, jy: 7 };
+  // 这些话南俊平时不太会说 → 可能直接问“你不是南俊吧？”；CALM 里的（晚安、好吧、早点睡……）不会触发
+  const ODD_TOPICS = ['petName','compliment','affection','love','miss','hug','kiss','loveQ','shipQ','comfort','futureCheer','fanFuture','fanName','didWell','maknae','proud','timeTravel','insult','harsh','askIsMember','robot','who','guess','danceGod','outfit','whatDiff','guessMe','howUsually','wish','believe','grownUp','firstMeet','lottery','sleepTogether','tellYou','frustrated'];
+  const CALM_TOPICS = ['followup','calledSelf','calledOther','bye','goSleep','stillUp','ack','yes','no','ok','thanks','noThanks','hello','laugh','letGo','coming','never','why','sleep','food','nothing','youToo','go'];
   const acknowledgements = {
     yq:['嗯 看见了','你说'], sx:['ㅋㅋ看见了','你接着说啊'], hx:['ㅋㅋㅋㅋ','我在看呢'],
     jw:['ㅋㅋ嗯','我看着呢'], ty:['ㅋㅋㅋㅋ','嗯 你说啊'], jy:['ㅋㅋ','嗯 看见了']
@@ -44,16 +47,28 @@
     function result(id,p,messages,topic='') {
       let lines=messages.filter(Boolean);
       if(p.schema!==2){p.pendingIdentity=false;p.pendingName=false;p.identityQuestion='';p.schema=2;}
+      // 和上一条回复一字不差时换个说法（连发“晚安”之类不再复读）
+      if(lines.length&&!['identity','name','call'].includes(topic)&&lines.join('|')===(p.lastReply||[]).join('|')){
+        const dup=rotate(id,p,'dup',root.STORY?.dupLines?.[id]);if(dup)lines=dup;
+      }
       // 起疑分两步：先说一句“你今天怎么怪怪的”，再过两句才直接问
       if(data.members[id]&&p.identity==='unknown'&&topic!=='call'&&topic!=='identity'){
         const n=(p.readerMessages||0)-(p.base||0),score=n+(p.odd||0)*2,at=SUSPECT_AT[id]||6;
-        if(p.hinted&&score>=at&&n>=(p.hintAt||0)+2&&!['followup','calledSelf','calledOther'].includes(topic)){
+        // 只在读者说了不像南俊会说的话（或者实在聊了很久）之后才直接问；先回一句，再问
+        const odd=ODD_TOPICS.includes(topic)||topic==='unmatched'||n>=(p.hintAt||0)+7;
+        if(p.hinted&&score>=at&&n>=(p.hintAt||0)+2&&!CALM_TOPICS.includes(topic)&&odd){
           p.identity='suspect';p.pendingIdentity=true;p.identityQuestion='notNamjoon';
-          lines=['等等',`你不是南俊${['jw','ty','jy'].includes(id)?'哥':''}吧？`];topic='identity';
+          lines=[...lines.slice(0,topic==='unmatched'?0:1),'等等',`你不是南俊${['jw','ty','jy'].includes(id)?'哥':''}吧？`];topic='identity';
         } else if(!p.hinted&&score>=at-2&&n>=1&&!['unmatched','ack','followup','no','yes','calledSelf','calledOther'].includes(topic)){
           p.hinted=true;p.hintAt=n;
           lines=[...lines,...(rotate(id,p,'hint',root.STORY?.payExtras?.hints?.[id])||['你今天怎么怪怪的'])];
         }
+      }
+      // 识破、知道名字以后又聊了一阵：成员主动说一段收尾的话（每人一次）
+      if(data.members[id]&&p.identity==='known'&&p.name&&!p.endingDone&&!['identity','name','call'].includes(topic)){
+        p.knownTalk=(p.knownTalk||0)+1;
+        const E=root.STORY?.closings?.[id];
+        if(E&&p.knownTalk>=9){p.endingDone=true;lines=[...lines,...(p.ctxDebut?E.after:E.before).map(x=>x.replaceAll('{name}',p.name))];}
       }
       // 记下这次回复里最后一个能接话的问题，下一句短回答由它接住
       p.awaiting='';
@@ -160,6 +175,7 @@
       if(root.ZH)raw=root.ZH.toSimp(String(raw||'')); // 繁体输入先统一成简体
       raw=String(raw||'').replace(/[❤♥💕💗💖💓💘💞🫶]\uFE0F?/gu,'爱').replace(/[😭😢🥲🥺]/gu,'呜'); // “我❤️你”、哭脸
       const p=person(id),t=normalize(raw);
+      p.ctxDebut=!!context.debut;
       if(p.schema!==2){p.schema=2;p.pendingIdentity=false;p.pendingName=false;p.identityQuestion='';}
       // 妈妈 / 经纪人 / 方PD：文字消息不回，一直挂着“1”；只有打电话没接时回一句
       if(data.minors[id])return result(id,p,[],'fixed');
@@ -271,7 +287,8 @@
       if(more&&more.lines?.[id]){
         const mode=p.identity==='known'?'after':'before';
         if(more.odd&&p.identity==='unknown')p.odd=(p.odd||0)+1;
-        const lines=(rotate(id,p,'more:'+topic+':'+mode,more.lines[id][mode]||more.lines[id].before)||[]).map(x=>x.replaceAll('{哥}',mode==='before'&&/^(?:jw|ty|jy)$/.test(id)?'哥':''));
+        const src=(p.ctxDebut&&more.debutLines?.[id])||more.lines[id];
+        const lines=(rotate(id,p,'more:'+topic+':'+mode+(src===more.lines[id]?'':':d'),src[mode]||src.before)||[]).map(x=>x.replaceAll('{哥}',mode==='before'&&/^(?:jw|ty|jy)$/.test(id)?'哥':''));
         p.unmatchedCount=0;p.lastInput=t;
         return result(id,p,lines,topic);
       }

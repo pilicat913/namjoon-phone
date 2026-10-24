@@ -14,6 +14,7 @@ vm.runInNewContext(readFileSync('dist/data/player-extras-3.js','utf8'),{window})
 vm.runInNewContext(readFileSync('dist/data/player-extras-4.js','utf8'),{window});
 vm.runInNewContext(readFileSync('dist/data/player-extras-5.js','utf8'),{window});
 vm.runInNewContext(readFileSync('dist/data/player-extras-6.js','utf8'),{window});
+vm.runInNewContext(readFileSync('dist/data/polish.js','utf8'),{window});
 {const c={};c.globalThis=c;vm.createContext(c);vm.runInContext(readFileSync('dist/vendor/opencc/t2cn.js','utf8'),c);const cv=c.OpenCC.Converter({from:'twp',to:'cn'});window.ZH={toSimp:s=>cv(String(s))};}
 vm.runInNewContext(readFileSync('dist/js/interaction-engine.js','utf8'),{window});
 let db={};const storage={get:(k,d)=>JSON.parse(JSON.stringify(db[k]??d)),set:(k,v)=>db[k]=JSON.parse(JSON.stringify(v))};
@@ -80,14 +81,16 @@ for(const id of Object.keys(window.STORY.interactions.members)){
   for(const input of ['宝宝','欧巴','吃了嘛']){
     const r=e.respond(id,input);assert.ok(r.messages.length,input);assert.equal(r.identity,'unknown',input);
   }
-  const fourth=e.respond(id,'睡了没有');
-  assert.equal(fourth.identity,'suspect');assert.equal(fourth.messages[0],'等等');
-  assert.equal(fourth.messages[1],`你不是南俊${['jw','ty','jy'].includes(id)?'哥':''}吧？`);
-  assert.equal(e.getState(id).readerMessages,4);
+  // 晚安、睡了没这类普通的话不会突然问；说了不像南俊的话（夸人）才问，而且先回一句再问
+  assert.equal(e.respond(id,'睡了没有').identity,'unknown');
+  const fourth=e.respond(id,'你好可爱');
+  assert.equal(fourth.identity,'suspect');assert.equal(fourth.messages.at(-2),'等等');assert.ok(fourth.messages.length>=3);
+  assert.equal(fourth.messages.at(-1),`你不是南俊${['jw','ty','jy'].includes(id)?'哥':''}吧？`);
+  assert.equal(e.getState(id).readerMessages,5);
   // 被问“你不是南俊吧？”时回“你怎么知道”= 承认，并先解释怎么看出来的
   const explanation=e.respond(id,'你怎么知道');assert.ok(explanation.messages[0].includes('不会这么叫'));assert.equal(explanation.identity,'known');
   // 另起一局：回“我是南俊”= 对方信了，回到“以为是南俊”
-  db={};e=create();for(const input of ['宝宝','欧巴','吃了嘛','睡了没有'])e.respond(id,input);
+  db={};e=create();for(const input of ['宝宝','欧巴','吃了嘛','你好可爱'])e.respond(id,input);
   assert.equal(e.getState(id).identity,'suspect');
   assert.equal(e.respond(id,'我是南俊').identity,'unknown');
   const fallback=e.respond(id,'橘子飞过四十七个玻璃房间');
@@ -107,7 +110,8 @@ assert.equal(e.getState('jy').identity,'unknown');assert.equal(e.getState('jy').
 // 起疑分两步：先有一句小怀疑，之后至少隔两句才直接问
 assert.ok(e.getState('jy').hinted);
 assert.equal(e.respond('jy','吃了吗').identity,'unknown');
-assert.equal(e.respond('jy','睡了没').identity,'suspect');
+assert.equal(e.respond('jy','睡了没').identity,'unknown');
+assert.equal(e.respond('jy','你好可爱').identity,'suspect');
 assert.equal(e.respond('jy','我是南俊').identity,'unknown');
 db={conversationState:{jy:{identity:'suspect',pendingIdentity:true,turns:3,used:{}}}};e=create();
 assert.equal(e.respond('jy','不是').identity,'suspect'); // 旧存档里含糊的待答问题不直接当承认
@@ -115,9 +119,10 @@ db={};e=create();
 assert.equal(e.respondBatch('sx',['喂','吃了吗','嗯','晚安']).identity,'unknown'); // 普通聊天不会第 4 句就起疑
 const hint=e.respond('sx','在干嘛');assert.equal(hint.identity,'unknown');assert.ok(e.getState('sx').hinted);
 assert.equal(e.respond('sx','睡了没').identity,'unknown');
-assert.equal(e.respond('sx','真的吗').identity,'suspect');
+assert.equal(e.respond('sx','真的吗').identity,'unknown');
+assert.equal(e.respond('sx','你好帅').identity,'suspect');
 assert.equal(e.getState('yq').readerMessages,undefined);
-e=create();assert.equal(e.getState('sx').readerMessages,7);
+e=create();assert.equal(e.getState('sx').readerMessages,8);
 assert.ok(!e.respond('sx','在吗').messages.some(x=>x.includes('不是南俊')));
 db={};e=create();assert.equal(e.respond('yq','我不是南俊').identity,'known');
 for(let i=0;i<5;i++)assert.equal(e.respond('yq','在吗').identity,'known');
@@ -179,7 +184,7 @@ for(const id of Object.keys(window.STORY.interactions.members)){
 }
 console.log('问名字、按性格打招呼、记住名字、转账与礼物回复检查通过');
 
-const toSuspect=(id)=>{for(const m of ['在吗','吃了吗','在干嘛','睡了没','真的吗','哈哈哈','我也是']){if(e.respond(id,m).identity==='suspect')return true;}return false;};
+const toSuspect=(id)=>{for(const m of ['在吗','吃了吗','在干嘛','睡了没','真的吗','哈哈哈','我也是','你好可爱','你好帅']){if(e.respond(id,m).identity==='suspect')return true;}return false;};
 for(const id of Object.keys(window.STORY.interactions.members)){
  for(const answer of ['不是','对','不是啊']){
   db={};e=create();
