@@ -1,7 +1,7 @@
 /* 本地关键词与上下文匹配。所有台词均为同人预写内容，不调用模型接口。 */
 (function (root) {
   'use strict';
-  const normalize = value => (root.ZH ? root.ZH.toSimp(String(value || '')) : String(value || '')).normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]+/gu, '');
+  const normalize = value => (root.ZH ? root.ZH.toSimp(String(value || '')) : String(value || '')).normalize('NFKC').replace(/[\u110F\u1112\u110B\u1172\u116E]/g, (c) => ({'\u110F':'ㅋ','\u1112':'ㅎ','\u110B':'ㅇ','\u1172':'ㅠ','\u116E':'ㅜ'})[c]).toLowerCase().replace(/[\s\p{P}\p{S}]+/gu, '');
   function calledMember(raw){
     const text=normalize(raw).replace(/^(?:喂|诶|欸|哎|嘿)/,'');
     const tail=/^(?:哥|哥哥|欧巴|oppa|오빠|형|hyung)?(?:啊|呀|呐|呢|在吗|在嘛|在不在|人呢|出来)?$/;
