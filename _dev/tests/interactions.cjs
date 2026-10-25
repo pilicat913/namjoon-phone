@@ -21,6 +21,7 @@ vm.runInNewContext(readFileSync('dist/data/player-extras-10.js','utf8'),{window}
 vm.runInNewContext(readFileSync('dist/data/player-extras-11.js','utf8'),{window});
 vm.runInNewContext(readFileSync('dist/data/player-extras-12.js','utf8'),{window});
 vm.runInNewContext(readFileSync('dist/data/player-extras-13.js','utf8'),{window});
+vm.runInNewContext(readFileSync('dist/data/player-extras-14.js','utf8'),{window});
 vm.runInNewContext(readFileSync('dist/data/polish.js','utf8'),{window});
 {const c={};c.globalThis=c;vm.createContext(c);vm.runInContext(readFileSync('dist/vendor/opencc/t2cn.js','utf8'),c);const cv=c.OpenCC.Converter({from:'twp',to:'cn'});window.ZH={toSimp:s=>cv(String(s))};}
 vm.runInNewContext(readFileSync('dist/js/interaction-engine.js','utf8'),{window});
