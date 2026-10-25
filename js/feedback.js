@@ -28,7 +28,8 @@
       h('p', { class: 'feedback-invite-note' }, '请勿填写真实隐私。关闭不会撤回已经上传的内容。'),
       h('div', { class: 'feedback-actions feedback-invite-actions' },
         h('button', { type: 'button', onclick: () => choose(true) }, '愿意参与'),
-        h('button', { type: 'button', onclick: () => choose(false) }, '暂不参与')));
+        h('button', { type: 'button', onclick: () => choose(false) }, '暂不参与')),
+      h('p', { class: 'feedback-author', 'data-zh-keep': '' }, '抖音/小红书：霹雳小猫', h('br'), 'threads：imyouryeon913'));
     dialog.addEventListener('cancel', e => { e.preventDefault(); choose(false); });
     document.body.append(dialog); dialog.showModal();
   }
@@ -95,7 +96,7 @@
     });
   }
   const style = h('style');
-  style.textContent = '.feedback-bar{flex:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 9px;background:#f2f0eb;color:#444;font:12px/1.4 sans-serif}.feedback-bar button{padding:5px 7px;color:#27568d;background:#fff;border:1px solid #b9c1ca;border-radius:4px;font:inherit}.feedback-bar label{display:flex;align-items:center;gap:3px}.feedback-bar label[hidden]{display:none}.feedback-bar input,#feedback-dialog input{appearance:auto;-webkit-appearance:auto;width:17px;height:17px;margin:0;vertical-align:middle;flex:none}.feedback-status{font-size:11px;color:#555}#feedback-dialog{box-sizing:border-box;width:min(92vw,420px);max-height:85vh;overflow:auto;padding:24px;border:0;border-radius:14px;background:#fff;color:#222;font:14px/1.7 sans-serif}#feedback-dialog::backdrop{background:#0009}#feedback-dialog h2{font-size:19px;margin:0 0 12px}.feedback-consent{display:flex;align-items:flex-start;gap:8px}.feedback-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}.feedback-actions button{padding:9px 14px;border:1px solid #aaa;border-radius:6px;background:#f1f3f5;color:#222;font:inherit}';
+  style.textContent = '.feedback-bar{flex:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 9px;background:#f2f0eb;color:#444;font:12px/1.4 sans-serif}.feedback-bar button{padding:5px 7px;color:#27568d;background:#fff;border:1px solid #b9c1ca;border-radius:4px;font:inherit}.feedback-bar label{display:flex;align-items:center;gap:3px}.feedback-bar label[hidden]{display:none}.feedback-bar input,#feedback-dialog input{appearance:auto;-webkit-appearance:auto;width:17px;height:17px;margin:0;vertical-align:middle;flex:none}.feedback-status{font-size:11px;color:#555}#feedback-dialog{box-sizing:border-box;width:min(92vw,420px);max-height:85vh;overflow:auto;padding:24px;border:0;border-radius:14px;background:#fff;color:#222;font:14px/1.7 sans-serif}#feedback-dialog::backdrop{background:#0009}#feedback-dialog h2{font-size:19px;margin:0 0 12px}.feedback-consent{display:flex;align-items:flex-start;gap:8px}.feedback-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px}.feedback-author{margin:16px 0 0;text-align:center;font-size:11.5px;line-height:1.6;color:#999}.feedback-actions button{padding:9px 14px;border:1px solid #aaa;border-radius:6px;background:#f1f3f5;color:#222;font:inherit}';
   style.textContent += '.feedback-invite-note{font-size:12px;color:#666}.feedback-invite-actions{justify-content:center}.feedback-invite-actions button{font-size:12px;min-height:44px;padding:8px 12px}';
   document.head.append(style);
   window.Feedback = { inviteOnce, mountBar, stage, flush, setEnabled, get enabled() { return enabled; } };

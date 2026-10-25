@@ -30,7 +30,7 @@ Object.assign(window.STORY, {
   },
 
   /* 设置 → 关于本机 最底下的小字（不需要就留空数组） */
-  credit: ['根据公开经历进行同人创作，聊天及部分日期为虚构编排', 'made by 霹雳小猫', '小红书：霹雳小猫 · Threads：imyouryeon913'],
+  credit: ['根据公开经历进行同人创作，聊天及部分日期为虚构编排', 'made by 霹雳小猫', '抖音/小红书：霹雳小猫 · Threads：imyouryeon913'],
 
   /* 声音设置页的说明文字 */
   soundNote: '闹钟与来电跟随此处音量。请先点击页面启用声音。',
