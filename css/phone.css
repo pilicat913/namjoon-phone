@@ -21,7 +21,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 svg { display: block; }
 
 /* ---------- 舞台：电脑端居中一部白色 iPhone 5 ---------- */
-#stage { position: fixed; inset: 0; display: grid; place-items: center; }
+#stage { position: fixed; top: 0; right: 0; bottom: 0; left: 0; display: grid; place-items: center; }
 /* 不显示手机外壳：电脑上只居中显示屏幕本身 */
 #device { position: relative; width: var(--sw); height: var(--sh); transform: scale(var(--scale, 1)); transform-origin: center; }
 #side-btn, .dv-top, #home-btn { display: none; }
@@ -64,14 +64,14 @@ body.fullscreen #screen { width: 100%; height: 100%; box-shadow: none; border-ra
 .sb-batt::after { content: ""; position: absolute; right: -4px; top: 2.5px; width: 2px; height: 4px; border-radius: 0 1px 1px 0; background: rgba(255,255,255,.9); }
 
 /* ---------- 层 ---------- */
-#layers { position: absolute; inset: 0; }
-.layer { position: absolute; inset: 0; overflow: hidden; }
-.wallpaper { position: absolute; inset: 0; background: #b9c3cc center/cover no-repeat; }
+#layers { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+.layer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; overflow: hidden; }
+.wallpaper { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: #b9c3cc center/cover no-repeat; }
 .wallpaper.is-empty { background: linear-gradient(#8e9aa6, #c9d0d6 30%, #aab4bd); }
 
 /* ---------- 锁屏 ---------- */
 .lock { color: #fff; touch-action: none; }
-.lock-inner { position: absolute; inset: 0; transition: transform .4s var(--ease-out), opacity .3s; will-change: transform; }
+.lock-inner { position: absolute; top: 0; right: 0; bottom: 0; left: 0; transition: transform .4s var(--ease-out), opacity .3s; will-change: transform; }
 .lock-top {
   position: absolute; left: 0; right: 0; top: var(--sb); height: 96px; text-align: center;
   background: linear-gradient(rgba(30,30,32,.62), rgba(10,10,12,.7)); border-bottom: 1px solid rgba(0,0,0,.6); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 1px 0 rgba(255,255,255,.12);
@@ -91,7 +91,7 @@ body.fullscreen #screen { width: 100%; height: 100%; box-shadow: none; border-ra
 }
 .slider { position: relative; flex: 1; height: 52px; border-radius: 12px; background: linear-gradient(#141416, #2c2c30); box-shadow: inset 0 1px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.22); overflow: hidden; touch-action: none; }
 .slider-text {
-  position: absolute; inset: 0; display: grid; place-items: center; padding-left: 58px; font-size: 21px; font-weight: 400; letter-spacing: 1px;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: grid; place-items: center; padding-left: 58px; font-size: 21px; font-weight: 400; letter-spacing: 1px;
   color: transparent; background: linear-gradient(90deg, #5e5e5e 0%, #5e5e5e 38%, #ffffff 50%, #5e5e5e 62%, #5e5e5e 100%) 0 0/250% 100%;
   -webkit-background-clip: text; background-clip: text; animation: shimmer 2.4s linear infinite; transition: opacity .15s;
 }
@@ -130,7 +130,7 @@ body.fullscreen #screen { width: 100%; height: 100%; box-shadow: none; border-ra
 /* ---------- 密码（iOS 6 简易密码） ---------- */
 .passcode { color: #fff; background: #000; }
 .passcode .wallpaper { filter: brightness(.55); }
-.pc-inner { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.pc-inner { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; flex-direction: column; }
 .pc-head { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: var(--sb); background: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.45)); }
 .pc-title { font-size: 17px; font-weight: 700; text-shadow: 0 -1px 0 rgba(0,0,0,.7); }
 .pc-hint { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,.75); text-shadow: 0 -1px 0 rgba(0,0,0,.7); }
@@ -160,7 +160,7 @@ body.fullscreen #screen { width: 100%; height: 100%; box-shadow: none; border-ra
 .icon6 { width: 100%; height: 100%; border-radius: inherit; overflow: hidden; position: relative; }
 .icon6 svg { width: 100%; height: 100%; }
 .icon6::after { /* iOS 6 的玻璃高光与描边 */
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; border-radius: inherit; pointer-events: none;
   background: linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.08) 48%, rgba(255,255,255,0) 50%);
   box-shadow: inset 0 0 0 .5px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.5);
 }
@@ -209,7 +209,7 @@ body.fullscreen .dock::after { bottom: 0; height: calc(9px + var(--sab)); }
 @keyframes appClose { to { transform: translate(var(--ox), var(--oy)) scale(.12); opacity: 0; } }
 
 /* 页面栈（应用内推入/返回，iOS 6 是整页平移） */
-.page { position: absolute; inset: 0; background: #fff; display: flex; flex-direction: column; overflow: hidden; }
+.page { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: #fff; display: flex; flex-direction: column; overflow: hidden; }
 .page.push-in { animation: pushIn .35s var(--ease-out); }
 .page.push-out { animation: pushOut .32s var(--ease-out) forwards; }
 .page.under { animation: underOut .35s var(--ease-out) forwards; }
@@ -236,7 +236,7 @@ body.fullscreen .dock::after { bottom: 0; height: calc(9px + var(--sab)); }
 @keyframes bannerOut { to { transform: rotateX(90deg); transform-origin: bottom; opacity: 0; } }
 
 /* ---------- 图片查看器（半透明黑色工具栏） ---------- */
-.viewer { position: absolute; inset: 0; z-index: 80; background: #000; color: #fff; display: flex; flex-direction: column; animation: fadeIn .25s; }
+.viewer { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 80; background: #000; color: #fff; display: flex; flex-direction: column; animation: fadeIn .25s; }
 .viewer-top {
   padding: var(--sb) 6px 0; height: calc(var(--sb) + 44px); display: flex; align-items: center; justify-content: space-between; font-size: 15px;
   background: linear-gradient(rgba(60,60,64,.75), rgba(10,10,12,.8)); border-bottom: 1px solid #000; box-shadow: inset 0 -1px 0 rgba(255,255,255,.08); flex: none; gap: 6px;
@@ -279,7 +279,7 @@ body.fullscreen .dock::after { bottom: 0; height: calc(9px + var(--sab)); }
 .post-url { width: 100%; min-width: 0; padding: 8px; border: 1px solid #bbb; border-radius: 5px; background: #fafafa; color: #777; font: 11px/1.4 var(--font); box-shadow: inset 0 1px 2px rgba(0,0,0,.15); }
 
 /* 跳转时间的过场 */
-.jump-fade { position: absolute; inset: 0; z-index: 150; background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; animation: fadeIn .8s; transition: opacity .8s; }
+.jump-fade { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 150; background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; animation: fadeIn .8s; transition: opacity .8s; }
 .jump-fade div { font: 200 30px/1.2 "Helvetica Neue", Helvetica, var(--font); letter-spacing: 1px; }
 .jump-fade small { font-size: 13px; color: #999; }
 .jump-fade.out { opacity: 0; }
@@ -291,7 +291,7 @@ body.fullscreen .dock::after { bottom: 0; height: calc(9px + var(--sab)); }
 @keyframes ncardIn { from { opacity: 0; transform: translateY(-14px); } }
 
 /* 出道合照上浮现的文字 */
-.ending { container-type: inline-size; position: absolute; inset: 0; top: calc(var(--sb) + 44px); z-index: 3; display: grid; place-items: center; background: rgba(0,0,0,0); transition: background 1.6s; pointer-events: none; }
+.ending { container-type: inline-size; position: absolute; top: 0; right: 0; bottom: 0; left: 0; top: calc(var(--sb) + 44px); z-index: 3; display: grid; place-items: center; background: rgba(0,0,0,0); transition: background 1.6s; pointer-events: none; }
 .ending.dim { background: rgba(0,0,0,.72); pointer-events: auto; cursor: pointer; }
 .ending-text { padding: 0 18px; text-align: center; color: #fff; animation: endingIn 1.1s ease both; transition: opacity .9s; }
 .ending-text p { margin: 0; min-height: 1em; white-space: nowrap; font: 300 17px/2 "Helvetica Neue", Helvetica, var(--font); letter-spacing: 1px; text-shadow: 0 1px 8px rgba(0,0,0,.6); }

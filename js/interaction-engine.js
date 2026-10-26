@@ -106,7 +106,7 @@
     const moreRe={};
     function moreTopic(t){
       const M=root.STORY?.moreTopics||{};
-      for(const [k,v] of Object.entries(M)){const re=moreRe[k]||(moreRe[k]=new RegExp(v.re));if(re.test(t))return k;}
+      for(const [k,v] of Object.entries(M)){const re=moreRe[k]||(moreRe[k]=(root.safeRe||RegExp)(v.re));if(re.test(t))return k;}
       return '';
     }
     function getTopic(raw,p,context={}) {

@@ -10,7 +10,8 @@
   /* ---------- 尺寸 ---------- */
   let restingViewportHeight=window.innerHeight,viewportFrame;
   function fit() {
-    const full = window.innerWidth <= 600;
+    const coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    const full = window.innerWidth <= 600 || (coarse && Math.min(screen.width || 9999, screen.height || 9999) <= 600);
     document.body.classList.toggle('fullscreen', full);
     if (full) {
       const viewport=window.visualViewport;
