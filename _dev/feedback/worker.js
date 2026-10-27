@@ -14,6 +14,18 @@ export default {
     const reply = (status, value) => new Response(JSON.stringify(value), { status, headers });
     if (url.pathname === '/health' && request.method === 'GET') return reply(200, { service: 'namjoon-feedback', configured: !!env.DB });
     if (url.pathname === '/export' && request.method === 'GET') return exportFile(url, env);
+    if (url.pathname === '/stats' && request.method === 'GET') return statsPage(url, env);
+    if (url.pathname === '/hit' && request.method === 'POST') {
+      // 只记数字：每天打开了几次、其中几位是第一次来。不存 IP、不存任何个人信息。
+      if (!ORIGINS.has(origin) || !env.DB) return reply(204, {});
+      try {
+        await env.DB.prepare('CREATE TABLE IF NOT EXISTS visits (day TEXT PRIMARY KEY, views INTEGER NOT NULL DEFAULT 0, visitors INTEGER NOT NULL DEFAULT 0)').run();
+        const day = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); // 韩国时间的日期
+        const isNew = url.searchParams.get('new') === '1' ? 1 : 0;
+        await env.DB.prepare('INSERT INTO visits (day, views, visitors) VALUES (?, 1, ?) ON CONFLICT(day) DO UPDATE SET views = views + 1, visitors = visitors + excluded.visitors').bind(day, isNew).run();
+      } catch {}
+      return new Response(null, { status: 204, headers });
+    }
     if (url.pathname !== '/messages') return reply(404, { error: 'not_found' });
     if (!ORIGINS.has(origin)) return reply(403, { error: 'origin_denied' });
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...headers, 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' } });
@@ -96,3 +108,14 @@ async function exportFile(url, env) {
   return new Response(csv, { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="namjoon-feedback-${stamp}.csv"`, 'Cache-Control': 'no-store' } });
 }
 
+
+/* 作者看浏览量用：/stats?key=密码（和 /export 同一个密码） */
+async function statsPage(url, env) {
+  const html = (body, status = 200) => new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>浏览量</title><body style="font:15px/1.6 -apple-system,sans-serif;padding:16px;max-width:520px;margin:auto">' + body, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
+  if (!env.EXPORT_KEY || url.searchParams.get('key') !== env.EXPORT_KEY) return html('密码不对', 403);
+  await env.DB.prepare('CREATE TABLE IF NOT EXISTS visits (day TEXT PRIMARY KEY, views INTEGER NOT NULL DEFAULT 0, visitors INTEGER NOT NULL DEFAULT 0)').run();
+  const { results } = await env.DB.prepare('SELECT day, views, visitors FROM visits ORDER BY day DESC LIMIT 120').all();
+  const total = await env.DB.prepare('SELECT COALESCE(SUM(views),0) v, COALESCE(SUM(visitors),0) u FROM visits').first();
+  const rows = results.map((r) => `<tr><td>${r.day}</td><td style="text-align:right">${r.views}</td><td style="text-align:right">${r.visitors}</td></tr>`).join('');
+  return html(`<h2 style="margin:0 0 8px">金南俊的旧手机 · 浏览量</h2><p>从开始统计到现在：打开 <b>${total.v}</b> 次，<b>${total.u}</b> 位新访客</p><table style="width:100%;border-collapse:collapse" border="1" cellpadding="6"><tr><th>日期（韩国时间）</th><th>打开次数</th><th>新访客</th></tr>${rows}</table><p style="color:#888;font-size:13px">打开次数：同一个人关掉再开算新的一次。新访客：这台设备、这个浏览器第一次来。清过浏览器数据的人会再算一次。</p>`);
+}
