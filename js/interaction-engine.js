@@ -299,6 +299,7 @@
         const src=(p.ctxDebut&&more.debutLines?.[id])||more.lines[id];
         const lines=(rotate(id,p,'more:'+topic+':'+mode+(src===more.lines[id]?'':':d'),src[mode]||src.before)||[]).map(x=>x.replaceAll('{哥}',mode==='before'&&/^(?:jw|ty|jy)$/.test(id)?'哥':''));
         p.unmatchedCount=0;p.lastInput=t;
+        if(lines.some(x=>x.includes('{name}')))return result(id,p,p.name?lines.map(x=>x.replaceAll('{name}',p.name)):['……你还没告诉我名字呢','叫什么？'],topic);
         return result(id,p,lines,topic);
       }
       if(topic==='no'||topic==='yes')return result(id,p,extra(id,topic),topic);
